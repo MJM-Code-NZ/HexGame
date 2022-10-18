@@ -7,15 +7,27 @@ namespace MJM.HG
     {
         public static GameManager Instance { get; private set; }
 
-        public static event EventHandler<OnTickArgs> OnTick;
-
-        
         public EnergySystemConfigurer EnergySystemConfigurer { get; private set; }
         public WorldSystem WorldSystem { get; private set; }
-        public EntitySystem EntitySystem { get; private set; }
+        public MapObjectSystem MapObjectSystem { get; private set; }
 
-        private int _tick;
-        private float _tickTimer;
+        [Header("World Size")]
+        [SerializeField]
+        private int _worldSize = 5;
+        public int WorldSize { get { return _worldSize; } }
+
+        [Header("Players")]
+        [SerializeField]
+        private int _numberOfPlayers = 1;
+        public int NumberOfPlayers { get { return _numberOfPlayers; } }
+ 
+        [Space()]
+        [SerializeField]
+        private int _player1XPosiiton = 0;
+        public int Player1XPosiiton { get { return _player1XPosiiton; } }
+        [SerializeField]
+        private int _player1YPosiiton = 0;
+        public int Player1YPosiiton { get { return _player1YPosiiton; } }
 
         // Awake is called on object creation
         void Awake()
@@ -30,10 +42,7 @@ namespace MJM.HG
             }
 
             WorldSystem = new WorldSystem();
-            EntitySystem = new EntitySystem();
-
-            _tick = 0;
-            _tickTimer = 0f;
+            MapObjectSystem = new MapObjectSystem();
         }
 
         private void EnforceSingleInstance()
@@ -48,35 +57,31 @@ namespace MJM.HG
             }
         }
 
-        // Start is called before the first frame update
         void Start()
-        {
-            GameInfo.Init();
+        {   
+            // GameInfo.Init();
 
             EnergySystemConfigurer.Init();
-            WorldSystem.Init();
-            EntitySystem.Init();
+            WorldSystem.Init(_worldSize, _numberOfPlayers);
+            MapObjectSystem.Init(_numberOfPlayers);  // more parameters to be added
         }
             
-        // Update is called once per frame
-        void Update()
+        void Update() 
         {
-            _tickTimer += Time.deltaTime;
+            
+        }
 
-            if (_tickTimer >= GameInfo.TickDuration)
-            {
-                _tick++;
+        private void OnValidate()
+        {
+            _worldSize = Math.Max(_worldSize, 1);
 
-                _tickTimer -= GameInfo.TickDuration;
-
-                OnTick?.Invoke(this, new OnTickArgs { Tick = _tick });
-            }
+            _numberOfPlayers = Math.Max(_numberOfPlayers, 1);           
         }
 
         void OnDisable()
         {
             WorldSystem.Quit();
-            EntitySystem.Quit();
+            MapObjectSystem.Quit();
         }
     }
 }

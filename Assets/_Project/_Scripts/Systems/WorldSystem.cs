@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 namespace MJM.HG
 {
-    public class WorldSystem : GameSystem
+    public class WorldSystem
     {
         public static event EventHandler<OnWorldEventArgs> OnUpdateWorldRender;
 
@@ -15,20 +15,26 @@ namespace MJM.HG
             get { return _world; }
         }
 
-        public new void Init()
+        public void Init(int worldSize, int players)
         {
             SetupEvents();
-            GenerateWorldMap();
+            GenerateWorldMap(worldSize, players);
         }
 
         private void SetupEvents()
         {
-            GameManager.OnTick += Tick;
+            //TimeManager.OnWorldTick += WorldTick;
+            WorldTimer.OnWorldTick += WorldTick;
         }
 
-        private void GenerateWorldMap()
+        private void GenerateWorldMap(int worldSize, int players)
         {
-            _world = new World(GameInfo.GameSettings.WorldSize); // In time world size will be passed into scene as a parameter
+            if (worldSize < 1)
+            {
+                Debug.Log("World size is too small " + worldSize + this);
+            }
+            
+            _world = new World(worldSize, players); 
 
             for (int x = -World.SizeWithEdge; x <= World.SizeWithEdge; x++)
             {
@@ -93,14 +99,15 @@ namespace MJM.HG
             return GroundType.Edge;         
         }
 
-        protected override void Tick(object sender, OnTickArgs eventArgs)
+        protected void WorldTick(object sender, OnWorldTickArgs eventArgs)
         {           
-            EnergySystem.ProcessTick(World); // time manager rework
+            EnergySystem.ProcessWorldTick(World);
         }
 
-        public override void Quit()
+        public void Quit()
         {
-            GameManager.OnTick -= Tick;
+            //TimeManager.OnWorldTick -= WorldTick;
+            WorldTimer.OnWorldTick -= WorldTick;
         }
     }
 }

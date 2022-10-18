@@ -7,12 +7,9 @@ namespace MJM.HG
 {
     public class CameraManager : MonoBehaviour
     {
-        //private RenderSettings _renderSettings;
-        
-        private Camera _camera;
+        public static CameraManager Instance { get; private set; }
 
-        //private float _panSpeed;
-        //private float _zoomSpeed;
+        private Camera _camera;
 
         private UserInputActions _userInputActions;
 
@@ -31,7 +28,9 @@ namespace MJM.HG
         [SerializeField] public float MaxZoom = 20f;
 
         void Awake()
-        {        
+        {
+            EnforceSingleInstance();
+
             _camera = Camera.main;
             _camera.transform.position = new Vector3(0.0f, 0.0f, -10);
             _camera.orthographicSize = DefaultZoom;
@@ -41,7 +40,19 @@ namespace MJM.HG
             _panAction = _userInputActions.User.Pan;
             _zoomAction = _userInputActions.User.Zoom;
         }
-         
+
+        private void EnforceSingleInstance()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Instance = this;
+            }
+        }
+
         void OnEnable()
         {
             _panAction.Enable();

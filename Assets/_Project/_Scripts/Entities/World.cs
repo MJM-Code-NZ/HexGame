@@ -33,19 +33,13 @@ namespace MJM.HG
             get { return _mapObjects; }
         }
 
-        // How many ticks between energy actions  //move out to some sort of time or energy class
-        public int EnergyTickFrequency = 5;
-
-        // Counter of how many ticks until next energy action
-        public int EnergyActionCountdown = 5;
-
-        public World(int size)
+        public World(int size, int players)
         {
             _size = size;
 
             _hexCells = new Dictionary<HexKey, HexCell>(AreaWithEdge);
 
-            _mapObjects = new Dictionary<HexKey, MapObject>();  // initial size of dictionary GameInfo.GameSettings.NumberOfPlayers Come back on this when rework players
+            _mapObjects = new Dictionary<HexKey, MapObject>(players);  // Currently one map object per player
         }
 
         public void AddHexCell(HexCoord position, HexCell hexCell)

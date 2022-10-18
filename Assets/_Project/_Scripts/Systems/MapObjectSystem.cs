@@ -5,39 +5,39 @@ using Unity.Mathematics;
 
 namespace MJM.HG
 {
-    public class EntitySystem : GameSystem
+    public class MapObjectSystem
     {
         public static event EventHandler<OnMapObjectEventArgs> OnCreateMapObject;
 
         private EnergyMineFactory _energyMineFactory; 
 
-        public override void Init()
+        public void Init(int players)
         {
-            SetupEvents();
+            //SetupEvents();
 
-            CreateInitialMapObjects();
+            CreateInitialMapObjects(players);
         }
 
-        private void SetupEvents()
-        {
-            GameManager.OnTick += Tick;
-        }
+        //private void SetupEvents()
+        //{
+        //    No events currently
+        //}
         
-        private void CreateInitialMapObjects()
+        private void CreateInitialMapObjects(int players)
         {
             World _world = GameManager.Instance.WorldSystem.World;
-            GameSettings _gamesettings = GameInfo.GameSettings;
+            GameManager _gameManager = GameManager.Instance;
 
             _energyMineFactory = new EnergyMineFactory();
             
             // Currently only set up to handle a single player.  Will change with start scene
             // If any other value is provided for player numbers just set an empty map object list - effectively zero players
-            if (_gamesettings.NumberOfPlayers == 1)
+            if (players == 1)
             {
-                // Initial energy mine position provided by GameInfo parameters check they are valid values before creating objects
+                // Initial energy mine position provided by GameManager parameters check they are valid values before creating objects
                 // Later will probably add option for random / automatic postioning
 
-                int2 _offsetPositon = new int2(_gamesettings.Player1XPosiiton, _gamesettings.Player1YPosiiton);
+                int2 _offsetPositon = new int2(_gameManager.Player1XPosiiton, _gameManager.Player1YPosiiton);
 
                 HexCoord position = HexCoordConversion.OffsetToHexCoord(_offsetPositon);
 
@@ -60,15 +60,10 @@ namespace MJM.HG
                 Debug.Log("Number of players not 1." + this);
             }
         }
-       
-        protected override void Tick(object sender, OnTickArgs eventArgs)
-        {
-           
-        }
 
-        public override void Quit()
+        public void Quit()
         {
-            GameManager.OnTick -= Tick;
+            // This is still called by game manager and will be needed if class starts listening for events in the future
         }
     }
 }

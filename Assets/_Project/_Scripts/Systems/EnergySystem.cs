@@ -28,7 +28,7 @@ namespace MJM.HG
         // Energy updates are collected in a dictionary and processed later to avoid multiple cell update events per cell
         private static Dictionary<HexKey,int> _energyUpdates;  
 
-        public static void ProcessTick(World world)
+        public static void ProcessWorldTick(World world)
         {
             _world = world;
 
@@ -48,17 +48,10 @@ namespace MJM.HG
                     _energyUpdates.Clear();
                 }
             }
-
-            World.EnergyActionCountdown--; // time manager rework
-
-            if (World.EnergyActionCountdown == 0)
-            {
-                CalculateWorldEnergySpread();
-                ProcessEnergyMines();
-                UpdateWorldEnergy();
-
-                World.EnergyActionCountdown = World.EnergyTickFrequency; // time manager rework
-            }
+          
+            CalculateWorldEnergySpread();
+            ProcessEnergyMines();
+            UpdateWorldEnergy();            
         }
 
         private static void CalculateWorldEnergySpread()

@@ -51,7 +51,7 @@ namespace MJM.HG
         private void SetupEvents()
         {
             WorldSystem.OnUpdateWorldRender += UpdateWorldRender;
-            EntitySystem.OnCreateMapObject += CreateMapObjectRenderData;
+            MapObjectSystem.OnCreateMapObject += CreateMapObjectRenderData;
             EnergySystem.OnUpdateHexCell += UpdateHexCellRender;          
         }
 
@@ -93,7 +93,7 @@ namespace MJM.HG
         void OnDisable()
         {
             WorldSystem.OnUpdateWorldRender -= UpdateWorldRender;
-            EntitySystem.OnCreateMapObject -= CreateMapObjectRenderData;
+            MapObjectSystem.OnCreateMapObject -= CreateMapObjectRenderData;
             EnergySystem.OnUpdateHexCell -= UpdateHexCellRender;
         }
 
