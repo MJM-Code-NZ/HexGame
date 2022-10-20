@@ -11,11 +11,11 @@ namespace MJM.HG
 
         private EnergyMineFactory _energyMineFactory; 
 
-        public void Init(int players)
+        public void Initialize(World world, List<int2> playerPositionList)
         {
             //SetupEvents();
 
-            CreateInitialMapObjects(players);
+            CreateInitialMapObjects(world, playerPositionList);
         }
 
         //private void SetupEvents()
@@ -23,30 +23,27 @@ namespace MJM.HG
         //    No events currently
         //}
         
-        private void CreateInitialMapObjects(int players)
+        private void CreateInitialMapObjects(World world, List<int2> playerPositionList)
         {
-            World _world = GameManager.Instance.WorldSystem.World;
+            // World _world = GameManager.Instance.WorldSystem.World;
             GameManager _gameManager = GameManager.Instance;
 
             _energyMineFactory = new EnergyMineFactory();
             
-            // Currently only set up to handle a single player.  Will change with start scene
-            // If any other value is provided for player numbers just set an empty map object list - effectively zero players
-            if (players == 1)
+            foreach (int2 _offsetPosition in playerPositionList)
             {
-                // Initial energy mine position provided by GameManager parameters check they are valid values before creating objects
-                // Later will probably add option for random / automatic postioning
+                
+                //Might use this later
+                //int2 _offsetPositon = new int2(_gameManager.PlayerParameters.Player1XPosiiton, _gameManager.PlayerParameters.Player1YPosiiton);
 
-                int2 _offsetPositon = new int2(_gameManager.PlayerParameters.Player1XPosiiton, _gameManager.PlayerParameters.Player1YPosiiton);
+                HexCoord position = HexCoordConversion.OffsetToHexCoord(_offsetPosition);
 
-                HexCoord position = HexCoordConversion.OffsetToHexCoord(_offsetPositon);
-
-                if (_world.OnMap(position))
+                if (world.OnMap(position))
                 {
                     //Currently a player is just an energy mine object
                     EnergyMine newEnergyMine;
 
-                    newEnergyMine = (EnergyMine)_energyMineFactory.CreateMapObject(position, _world);
+                    newEnergyMine = (EnergyMine)_energyMineFactory.CreateMapObject(position, world);
 
                     OnCreateMapObject?.Invoke(this, new OnMapObjectEventArgs { MapObject = newEnergyMine });                   
                 }
@@ -54,11 +51,7 @@ namespace MJM.HG
                 {
                     Debug.Log("Player position outside world boundaries." + this);
                 }
-            }
-            else
-            {
-                Debug.Log("Number of players not 1." + this);
-            }
+            }           
         }
 
         public void Quit()

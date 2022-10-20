@@ -15,10 +15,12 @@ namespace MJM.HG
             get { return _world; }
         }
 
-        public void Init(int worldSize, int players)
+        public World Initialize(int worldSize, int players)
         {
             SetupEvents();
-            GenerateWorldMap(worldSize, players);
+            World _world = GenerateWorldMap(worldSize, players);
+
+            return _world;
         }
 
         private void SetupEvents()
@@ -27,7 +29,7 @@ namespace MJM.HG
             WorldTimer.OnWorldTick += WorldTick;
         }
 
-        private void GenerateWorldMap(int worldSize, int players)
+        private World GenerateWorldMap(int worldSize, int players)
         {
             if (worldSize < 1)
             {
@@ -45,6 +47,8 @@ namespace MJM.HG
             }
 
             OnUpdateWorldRender?.Invoke(this, new OnWorldEventArgs { World = World });
+
+            return _world;
         }
 
         private void GenerateHexCell(int x, int y)
@@ -102,28 +106,6 @@ namespace MJM.HG
         protected void WorldTick(object sender, OnWorldTickArgs eventArgs)
         {           
             EnergySystem.ProcessWorldTick(World);
-        }
-
-        // Calculate how many players can fit in world
-        public int CalcMaxPlayers(int worldSize)
-        {
-            PlayerParameters _param = GameManager.Instance.PlayerParameters;
-
-            // First calculate how many players fit on one edge
-            int _widthAvailable = 2 * worldSize + 1;
-            int _widthRequired;
-            int i = 1;
-            do
-            {
-                i++;
-                _widthRequired = i * _param.SpacePerPlayer + (i - 1) * _param.SpaceBetweenPlayers;
-            }
-            while (_widthRequired <= _widthAvailable);
-
-            int _playersPerSide = i - 1;
-            int _maxPlayers = _playersPerSide * _playersPerSide;
-            
-            return _maxPlayers;
         }
 
         public void Quit()

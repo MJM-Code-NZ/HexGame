@@ -21,7 +21,7 @@ namespace MJM.HG
         [SerializeField] private TextMeshProUGUI _playerSliderMinText;
         [SerializeField] private TextMeshProUGUI _playerSliderMaxText;
 
-        private WorldSystem _worldSystem; 
+        //private WorldSystem _worldSystem; 
         
         private string _worldSizeLabel = "World Size = ";
         private string _playerLabel = "Players = ";
@@ -39,7 +39,7 @@ namespace MJM.HG
                 Debug.Log($"World size slider not linked to UI script {this}");
             }
 
-            _worldSystem = GameManager.Instance.WorldSystem;
+            //_worldSystem = GameManager.Instance.WorldSystem;
 
             SetInitialSliderTexts();
 
@@ -52,7 +52,7 @@ namespace MJM.HG
             _worldSizeSlider.value = Mathf.Round(_worldSizeSlider.value);
             _worldSliderValueText.text = _worldSizeLabel + _worldSizeSlider.value;
 
-            _playerSlider.maxValue = _worldSystem.CalcMaxPlayers((int)_worldSizeSlider.value);
+            _playerSlider.maxValue = PlayerSystem.CalcMaxPlayers((int)_worldSizeSlider.value);
             _playerSliderMaxText.text = _playerSlider.maxValue.ToString();
         }
 

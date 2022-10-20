@@ -12,7 +12,7 @@ namespace MJM.HG
         private int cellEnergyCap = 10;  //Editor change only apply on startup
 
         private int minCellEnergyCap = 1;
-        public void Init()
+        public void ConfigureEnergySystem()
         {
             EnergySystem.CellEnergyCap = cellEnergyCap;
         }

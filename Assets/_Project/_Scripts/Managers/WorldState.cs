@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace MJM.HG
@@ -23,9 +24,12 @@ namespace MJM.HG
 
         public override void LoadSceneComplete()
         {
-            _gmInstance.EnergySystemConfigurer.Init();
-            _gmInstance.WorldSystem.Init(_worldSize, _numberOfPlayers);
-            _gmInstance.MapObjectSystem.Init(_gmInstance.NumberOfPlayers);
+            _gmInstance.EnergySystemConfigurer.ConfigureEnergySystem();
+            World _world = _gmInstance.WorldSystem.Initialize(_worldSize, _numberOfPlayers);
+
+            List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
+
+            _gmInstance.MapObjectSystem.Initialize(_world, _playerPositionList);
         }
     }
 }
