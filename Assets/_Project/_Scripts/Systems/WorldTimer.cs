@@ -12,7 +12,7 @@ namespace MJM.HG
 
         public override void Update()
         {
-            if (base.IsBaseTick())
+            if (base.TickCheck())
             {
                 OnWorldTick?.Invoke(this, new OnWorldTickArgs { WorldTick = _tickCount });
             }

@@ -37,7 +37,7 @@ namespace MJM.HG
                 // Initial energy mine position provided by GameManager parameters check they are valid values before creating objects
                 // Later will probably add option for random / automatic postioning
 
-                int2 _offsetPositon = new int2(_gameManager.Player1XPosiiton, _gameManager.Player1YPosiiton);
+                int2 _offsetPositon = new int2(_gameManager.PlayerParameters.Player1XPosiiton, _gameManager.PlayerParameters.Player1YPosiiton);
 
                 HexCoord position = HexCoordConversion.OffsetToHexCoord(_offsetPositon);
 

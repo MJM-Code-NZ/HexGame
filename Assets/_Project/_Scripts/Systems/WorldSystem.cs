@@ -104,6 +104,28 @@ namespace MJM.HG
             EnergySystem.ProcessWorldTick(World);
         }
 
+        // Calculate how many players can fit in world
+        public int CalcMaxPlayers(int worldSize)
+        {
+            PlayerParameters _param = GameManager.Instance.PlayerParameters;
+
+            // First calculate how many players fit on one edge
+            int _widthAvailable = 2 * worldSize + 1;
+            int _widthRequired;
+            int i = 1;
+            do
+            {
+                i++;
+                _widthRequired = i * _param.SpacePerPlayer + (i - 1) * _param.SpaceBetweenPlayers;
+            }
+            while (_widthRequired <= _widthAvailable);
+
+            int _playersPerSide = i - 1;
+            int _maxPlayers = _playersPerSide * _playersPerSide;
+            
+            return _maxPlayers;
+        }
+
         public void Quit()
         {
             //TimeManager.OnWorldTick -= WorldTick;

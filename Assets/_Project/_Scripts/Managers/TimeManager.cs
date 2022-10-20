@@ -32,16 +32,16 @@ namespace MJM.HG
 
         void Awake()
         {
-            EnforceSingleInstance();
-
-            _renderTimer = this.gameObject.AddComponent<RenderTimer>();
-            _worldTimer = this.gameObject.AddComponent<WorldTimer>();            
+            EnforceSingleInstance();                      
         }
 
         void Start()
         {
-            _renderTimer.SetDuration(_tickDuration);
-            _worldTimer.SetDuration(_worldTickDuration);
+            _renderTimer = this.gameObject.AddComponent<RenderTimer>();
+            _worldTimer = this.gameObject.AddComponent<WorldTimer>();
+
+            _renderTimer.SetTimer(_tickDuration, true);
+            _worldTimer.SetTimer(_worldTickDuration, true);
         }
 
         private void EnforceSingleInstance()

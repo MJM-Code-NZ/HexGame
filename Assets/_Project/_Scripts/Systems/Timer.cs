@@ -16,17 +16,29 @@ namespace MJM.HG
         
         protected float _tickDuration;
         protected float _tickTimer;
+        protected bool _timerActive;
         
 
-        void Awake()
+        void Start()
         {
             _tickCount = 0;
             _tickTimer = 0f;
+            _timerActive = false;
         }
 
-        public void SetDuration(float tickDuration)
+        public void SetTimer(float tickDuration, bool activeFlag)
         {
             _tickDuration = tickDuration;
+            _timerActive = activeFlag;
+        }
+        public void StartTimer()
+        {
+            _timerActive = true;
+        }
+
+        public void StopTimer()
+        {
+            _timerActive = false;
         }
 
         public virtual void Update()
@@ -34,7 +46,7 @@ namespace MJM.HG
             // Call IsBaseTick and if true Invoke Event in subclass
         }
 
-        public bool IsBaseTick()
+        public bool TickCheck()
         {
             _tickTimer += Time.deltaTime;
 
