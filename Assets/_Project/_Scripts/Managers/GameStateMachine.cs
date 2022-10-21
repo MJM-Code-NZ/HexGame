@@ -6,18 +6,19 @@ namespace MJM.HG
 {
     public class GameStateMachine
     { 
-        public GameState currentState;
+        private GameState _currentState;
+        public GameState CurrentState { get { return _currentState; } }
 
         public void ChangeState(GameState newState)
         {
-            if (currentState != null)
+            if (_currentState != null)
             {
-                currentState.Exit();
+                _currentState.Exit();
             }
 
-            currentState = newState;
+            _currentState = newState;
 
-            currentState.Enter();
+            _currentState.Enter();
         }
     }
 }

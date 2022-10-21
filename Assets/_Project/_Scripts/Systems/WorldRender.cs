@@ -12,22 +12,22 @@ namespace MJM.HG
         private Grid _hexGrid;
 
         private Tilemap _hexTilemap;
-
+       
+        [SerializeField] private Tile _standardGround;
+        [SerializeField] private Tile _edgeGround;
+        
         // Tiles are serialized as a list as a work around to being unable to serialize dictionaries
         // this data will be moved to a dictionary in a method in this script
-        [SerializeField]
-        private List<Tile> _tilesPrefabsList;
-        private Dictionary<GroundType, Tile> _hexTiles;
+        [SerializeField] private List<Tile> _energyTilesList;
+        private Dictionary<int, Tile> _energyTiles;
  
         [SerializeField]
         private GameObject _hexGridTextPrefab;
             
         // These two serialized lists are a solution to the problem of not being able to use
         // SerializeField to build a dictionary of map object prefabs through linking prefabs on the unity editor
-        [SerializeField]
-        private List<string>  _mapObjectNames;
-        [SerializeField]
-        private List<GameObject> _mapObjectPrefabsList;
+        [SerializeField] private List<string>  _mapObjectNames;
+        [SerializeField] private List<GameObject> _mapObjectPrefabsList;
         private Dictionary<string, GameObject> _mapObjectPrefabs;
              
         private GameObject _mapObjectsGameObject;
@@ -60,11 +60,14 @@ namespace MJM.HG
             _hexGrid = GameObject.Find("HexGrid").GetComponent<Grid>();
             _hexTilemap = GameObject.Find("HexTilemap").GetComponent<Tilemap>();
 
-            _hexTiles = new Dictionary<GroundType, Tile>
+            _energyTiles = new Dictionary<int, Tile>
             {
-                [GroundType.None] = null, // at this time there is no need for a "no ground" tile and it is not in the prefablist
-                [GroundType.Standard] = _tilesPrefabsList[(int)GroundType.Standard-1],
-                [GroundType.Edge] = _tilesPrefabsList[(int)GroundType.Edge - 1],
+                [0] = null, // at this time there is a separate no energy tile outside this dictionary
+                [1] = _energyTilesList[0],
+                [2] = _energyTilesList[1],
+                [3] = _energyTilesList[2],
+                [4] = _energyTilesList[3],
+                [5] = _energyTilesList[4],
             };
         }
 
@@ -104,11 +107,7 @@ namespace MJM.HG
             {
                 HexCell hexCell = keyValuePair.Value;
 
-                int2 positionOffset = HexCoordConversion.HexCoordToOffset(hexCell.Position);
-                
-                Vector3Int tilemapPosition = new Vector3Int(positionOffset.x, positionOffset.y, 0);
-
-                _hexTilemap.SetTile(tilemapPosition, _hexTiles[hexCell.GroundType]);
+                SetTile(hexCell);
             }
 
             if (_hexGridText != HexGridText.None) // texts are required
@@ -118,6 +117,30 @@ namespace MJM.HG
                     CreateHexTexts(eventArgs.World);
                 }
             }
+        }
+
+        private void SetTile(HexCell hexCell)
+        {
+            int2 positionOffset = HexCoordConversion.HexCoordToOffset(hexCell.Position);
+
+            Vector3Int tilemapPosition = new Vector3Int(positionOffset.x, positionOffset.y, 0);
+
+            Tile _tile = SelectTile(hexCell.GroundType, hexCell.Energy);
+
+            _hexTilemap.SetTile(tilemapPosition, _tile);
+        }
+
+        private Tile SelectTile(GroundType groundType, int energy)
+        {
+            if (groundType == GroundType.None) return null;
+            
+            if (groundType == GroundType.Edge) return _edgeGround;
+
+            if (energy == 0) return _standardGround;
+
+            int cappedEnergy = Math.Min(energy, _energyDisplayCap);
+
+            return _energyTilesList[cappedEnergy-1];         
         }
 
         private void CreateHexTexts(World world)
@@ -183,10 +206,12 @@ namespace MJM.HG
 
         private void UpdateHexCellRender(object sender, OnHexCellEventArgs eventArgs)
         // Currently handles changes to energy level in cell
+        // Update tile displayed in hex based on energy level
         // Update energy text if it is selected to be rendered
-        // FUTURE - update tile colour based on energy level
         {
             HexCell hexCell = eventArgs.Hexcell;
+
+            SetTile(hexCell);
 
             if (_hexGridText == HexGridText.Energy)
             {

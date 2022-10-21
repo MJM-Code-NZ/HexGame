@@ -97,7 +97,7 @@ namespace MJM.HG
 
             int _posY = RandomHelper.RandomRange(_minSpawnY, _maxSpawnY);
 
-            Debug.Log($"PP {_minSpawnX} {_maxSpawnX} {_posX} {_minSpawnY} {_maxSpawnY} _{_posY} ");
+            //Debug.Log($"PP {_minSpawnX} {_maxSpawnX} {_posX} {_minSpawnY} {_maxSpawnY} _{_posY} ");
 
             return new int2(_posX, _posY);
         }

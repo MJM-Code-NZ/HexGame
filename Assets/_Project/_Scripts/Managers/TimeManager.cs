@@ -23,7 +23,7 @@ namespace MJM.HG
 
         private int _tick;
         private float _tickTime;
-       
+
         private int _worldTick;
         private float _worldTickTime;
 
@@ -32,7 +32,7 @@ namespace MJM.HG
 
         void Awake()
         {
-            EnforceSingleInstance();                      
+            EnforceSingleInstance();
         }
 
         void Start()
@@ -55,16 +55,52 @@ namespace MJM.HG
                 Instance = this;
             }
         }
-       
+
         void Update()
         {
-            
+
         }
 
         private void OnValidate()
         {
             _tickDuration = Mathf.Max(_tickDuration, _minimumTickDuration);
             _worldTickDuration = Mathf.Max(_worldTickDuration, _tickDuration);
+        }
+
+        public void StartWorldTime()
+        {
+            _worldTimer.StartTimer();
+            _renderTimer.StartTimer();
+        }
+
+        public void WorldStepRequest()
+        {
+            _worldTimer.ForceTick();
+        }
+
+        public void PauseWorldRequest(bool pause)
+        {
+            if (pause)
+            {
+                _worldTimer.StopTimer();
+            }
+            else
+            {
+                _worldTimer.StartTimer();
+            }
+        }
+
+        //Parameterless version of this method toggles the timers enable status
+        public bool PauseWorldRequest()
+        {           
+            PauseWorldRequest(_worldTimer.TimerActive);
+
+            return _worldTimer.TimerActive;
+        }
+
+        public void UpdateWorldSpeedRequest(float duration)
+        {
+            _worldTimer.ChangeDuration(duration);
         }
 
         void OnDisable()

@@ -294,7 +294,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit Game
+  m_text: Quit
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1574,7 +1574,19 @@ MonoBehaviour:
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1243602916}
+        m_TargetAssemblyTypeName: MJM.HG.MainMenuUI, Assembly-CSharp
+        m_MethodName: PlayerSliderChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1433566687
 GameObject:
   m_ObjectHideFlags: 0
@@ -1839,20 +1851,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 1251378706}
   m_HandleRect: {fileID: 866056222}
   m_Direction: 0
-  m_MinValue: 2
-  m_MaxValue: 14
+  m_MinValue: 5
+  m_MaxValue: 29
   m_WholeNumbers: 0
-  m_Value: 5
+  m_Value: 9
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 11500000, guid: cd14ee16e8086f04fae9537e61183c5f, type: 3}
-        m_TargetAssemblyTypeName: UnityEditor.MonoScript, UnityEditor.CoreModule
-        m_MethodName: 
+      - m_Target: {fileID: 1243602916}
+        m_TargetAssemblyTypeName: MJM.HG.MainMenuUI, Assembly-CSharp
+        m_MethodName: WorldSliderChanged
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

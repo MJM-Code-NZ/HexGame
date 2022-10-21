@@ -11,7 +11,7 @@ namespace MJM.HG
 
         private Camera _camera;
 
-        private UserInputActions _userInputActions;
+        //private UserInputActions _userInputActions;
 
         private InputAction _panAction;
         private InputAction _zoomAction;
@@ -35,10 +35,15 @@ namespace MJM.HG
             _camera.transform.position = new Vector3(0.0f, 0.0f, -10);
             _camera.orthographicSize = DefaultZoom;
 
-            _userInputActions = new UserInputActions();
+            //_userInputActions = new UserInputActions();
 
-            _panAction = _userInputActions.User.Pan;
-            _zoomAction = _userInputActions.User.Zoom;
+     
+        }
+
+        private void Start()
+        {
+            _panAction = GameManager.Instance.UserInputActions.Camera.Pan;
+            _zoomAction = GameManager.Instance.UserInputActions.Camera.Zoom;
         }
 
         private void EnforceSingleInstance()
@@ -53,10 +58,18 @@ namespace MJM.HG
             }
         }
 
-        void OnEnable()
+        public void EnableCameraControls(bool enable)
         {
-            _panAction.Enable();
-            _zoomAction.Enable();
+            if (enable)
+            {
+                _panAction.Enable();
+                _zoomAction.Enable();
+            }
+            else
+            {
+                _panAction.Disable();
+                _zoomAction.Disable();
+            }
         }
 
         // Update is called once per frame
@@ -67,7 +80,7 @@ namespace MJM.HG
         }
 
         private void UpdatePan()
-        {
+        {           
             Vector2 panValue = _panAction.ReadValue<Vector2>();
             Vector3 panDisplacement = PanSpeed * panValue;
 
@@ -79,7 +92,7 @@ namespace MJM.HG
         }
 
         private void UpdateZoom()
-        {
+        {           
             float zoomValue = _zoomAction.ReadValue<float>();
             float zoomDisplacement = ZoomSpeed * zoomValue;
 
@@ -107,12 +120,6 @@ namespace MJM.HG
             if (MinZoom > MaxZoom) { MinZoom = MaxZoom; }
 
             DefaultZoom = Mathf.Clamp(DefaultZoom, MinZoom, MaxZoom);
-        }
-
-        void OnDisable()
-        {
-            _panAction.Disable();
-            _zoomAction.Disable();
         }
     }
 }

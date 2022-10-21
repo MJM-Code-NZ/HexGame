@@ -28,6 +28,21 @@ namespace MJM.HG
 
         }
 
+        public virtual void PauseRequest()
+        {
+
+        }
+
+        public virtual void StepRequest()
+        {
+            
+        }
+
+        public virtual void EscapeRequest()
+        {
+            
+        }
+
         public virtual void Exit()
         {
 

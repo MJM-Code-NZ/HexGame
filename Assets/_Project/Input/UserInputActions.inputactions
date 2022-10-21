@@ -2,7 +2,7 @@
     "name": "UserInputActions",
     "maps": [
         {
-            "name": "User",
+            "name": "Camera",
             "id": "e42ca11d-5c41-407f-8d11-732f280acce9",
             "actions": [
                 {
@@ -112,6 +112,74 @@
                     "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "GameFlow",
+            "id": "0c4652d3-0364-493f-93ae-cbadd4148833",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "868e5ebf-a479-4e52-9ad5-31298872b64e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Step",
+                    "type": "Button",
+                    "id": "3e2f88f5-c196-4058-8b85-ff50e7cdf635",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Escape",
+                    "type": "Button",
+                    "id": "ad2e5d8a-e94b-4615-90c7-aa9772cf323c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0ca330b9-b61e-4062-9b00-831f0262f9c7",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "59614063-9095-4792-913c-b031f4daf15c",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Step",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2d0fee4c-b7a0-4343-a973-59b566edcf83",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Escape",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

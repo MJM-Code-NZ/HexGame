@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 namespace MJM.HG
 {
@@ -15,6 +16,8 @@ namespace MJM.HG
         public EnergySystemConfigurer EnergySystemConfigurer { get; private set; }
         public WorldSystem WorldSystem { get; private set; }
         public MapObjectSystem MapObjectSystem { get; private set; }
+        public PlayerInput PlayerInput { get; private set; }
+        public UserInputActions UserInputActions { get; private set; }
 
         [Header("World Size")]
         [SerializeField]
@@ -34,6 +37,10 @@ namespace MJM.HG
         void Awake()
         {
             EnforceSingleInstance();
+        
+            PlayerInput = GetComponent<PlayerInput>();
+
+            UserInputActions = new UserInputActions();
 
             PlayerParameters = GetComponent<PlayerParameters>();
 
@@ -71,7 +78,7 @@ namespace MJM.HG
         {
             _worldSize = Math.Max(_worldSize, 1);
             _numberOfPlayers = Math.Max(_numberOfPlayers, 1);
-        }
+        }       
 
         public void ProcessSceneLoad(string sceneName)
         {
@@ -95,7 +102,7 @@ namespace MJM.HG
             // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scens in SceneManager to change
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
 
-            StateMachine.currentState.LoadSceneComplete();
+            StateMachine.CurrentState.LoadSceneComplete();
         }
         public void ProcessSceneUnload(string sceneName)
         {
@@ -125,6 +132,39 @@ namespace MJM.HG
         public void HandleQuitGameRequest()
         {
             StateMachine.ChangeState(new QuitState());
+        }
+
+        public void EnableGameflowControls(bool enable)
+        {
+            if (enable)
+            {
+                PlayerInput.actions.FindActionMap("Gameflow").Enable();
+            }
+            else
+            {
+                PlayerInput.actions.FindActionMap("Gameflow").Disable();
+            }
+        }
+
+        private void OnPause()
+        {
+            Debug.Log("PAUSE");
+
+            StateMachine.CurrentState.PauseRequest();
+        }
+
+        private void OnStep()
+        {
+            Debug.Log("STEP");
+
+            StateMachine.CurrentState.StepRequest();
+        }
+
+        private void OnEscape()
+        {
+            Debug.Log("ESCAPE");
+
+            StateMachine.CurrentState.EscapeRequest();
         }
 
         void OnDisable()

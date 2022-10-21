@@ -343,6 +343,7 @@ GameObject:
   - component: {fileID: 1904524351}
   - component: {fileID: 1904524349}
   - component: {fileID: 1904524348}
+  - component: {fileID: 1904524352}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -410,8 +411,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _worldSize: 5
   _numberOfPlayers: 1
-  _worldScene:
-    m_Handle: 0
 --- !u!114 &1904524351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,5 +426,44 @@ MonoBehaviour:
   _spacePerPlayer: 5
   _spaceBetweenPlayers: 1
   _overrideMenuPlayers: 0
-  _player1XPosiiton: 0
-  _player1YPosiiton: 0
+  _playerPositionList:
+  - x: 0
+    y: 0
+  - x: 0
+    y: 1
+  - x: 1
+    y: 2
+  - x: -1
+    y: -1
+  - x: -1
+    y: -2
+--- !u!114 &1904524352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904524346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: addbc6323ef5ec048acfcfb0d1f033b1, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: GameFlow
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

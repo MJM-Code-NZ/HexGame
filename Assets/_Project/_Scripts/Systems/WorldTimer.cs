@@ -10,12 +10,19 @@ namespace MJM.HG
     {
         public static event EventHandler<OnWorldTickArgs> OnWorldTick;
 
-        public override void Update()
+        public override bool TickCheck(bool forceTick)
         {
-            if (base.TickCheck())
+            if (base.TickCheck(forceTick))
             {
                 OnWorldTick?.Invoke(this, new OnWorldTickArgs { WorldTick = _tickCount });
+
+                return true;
             }
+            else
+            {
+                return false;
+            }
+            
         }
     }   
 }

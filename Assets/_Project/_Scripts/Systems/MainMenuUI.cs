@@ -6,8 +6,6 @@ using TMPro;
 
 namespace MJM.HG
 {
-    public struct PlayerRange { int min; int max; }
-
     public class MainMenuUI : MonoBehaviour
     {
         [SerializeField] private Slider _worldSizeSlider;
@@ -20,13 +18,10 @@ namespace MJM.HG
         [SerializeField] private TextMeshProUGUI _playerSliderValueText;
         [SerializeField] private TextMeshProUGUI _playerSliderMinText;
         [SerializeField] private TextMeshProUGUI _playerSliderMaxText;
-
-        //private WorldSystem _worldSystem; 
         
         private string _worldSizeLabel = "World Size = ";
         private string _playerLabel = "Players = ";
 
-        private PlayerRange _playerRange;
         private void Start()
         {
             if (_worldSizeSlider == null)
@@ -38,25 +33,20 @@ namespace MJM.HG
             {
                 Debug.Log($"World size slider not linked to UI script {this}");
             }
-
-            //_worldSystem = GameManager.Instance.WorldSystem;
-
-            SetInitialSliderTexts();
-
-            _worldSizeSlider.onValueChanged.AddListener(delegate { WorldSliderChanged(); });
-            _playerSlider.onValueChanged.AddListener(delegate { PlayerSliderChanged(); });
+           
+            SetInitialSliderTexts();           
         }
 
-        private void WorldSliderChanged()
+        public void WorldSliderChanged()
         {
-            _worldSizeSlider.value = Mathf.Round(_worldSizeSlider.value);
+            _worldSizeSlider.value = Mathf.Round((_worldSizeSlider.value -1 ) / 2) * 2 + 1;
             _worldSliderValueText.text = _worldSizeLabel + _worldSizeSlider.value;
 
-            _playerSlider.maxValue = PlayerSystem.CalcMaxPlayers((int)_worldSizeSlider.value);
+            _playerSlider.maxValue = PlayerSystem.CalcMaxPlayers((int)(_worldSizeSlider.value - 1) / 2);
             _playerSliderMaxText.text = _playerSlider.maxValue.ToString();
         }
 
-        private void PlayerSliderChanged()
+        public void PlayerSliderChanged()
         {
             _playerSlider.value = Mathf.Round(_playerSlider.value);
             _playerSliderValueText.text = _playerLabel + _playerSlider.value;
@@ -79,12 +69,12 @@ namespace MJM.HG
         {
             // Debug.Log("New game click"); 
             
-            GameManager.Instance.HandleNewGameRequest((int)_worldSizeSlider.value, (int)_playerSlider.value);      
+            GameManager.Instance.HandleNewGameRequest((int)(_worldSizeSlider.value - 1) / 2, (int)_playerSlider.value);      
         }
 
         public void QuitGameClick()
         {
-            Debug.Log("Quit game click");
+            // Debug.Log("Quit game click");
 
             GameManager.Instance.HandleQuitGameRequest();
 
