@@ -92,7 +92,7 @@ namespace MJM.HG
 
             _centerMenuPanel.SetActive(true);
 
-            //CameraManager.Instance.EnableCameraControls(false);
+            CameraManager.Instance.EnableCameraControls(false);
         }
 
         // Required because escape key interacts with 2 different buttons depending on whether escapre menu is open
@@ -110,6 +110,8 @@ namespace MJM.HG
 
             _bottomRightPanel.SetActive(true);
             _topRightPanel.SetActive(true);
+
+            CameraManager.Instance.EnableCameraControls(true);
 
             // Restore pause state prior to escape menu opening.
             // Needs to be after the set active calls uo toggle onchangevalue will not execute

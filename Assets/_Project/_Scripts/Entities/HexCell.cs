@@ -23,6 +23,13 @@ namespace MJM.HG
             set { _energy = value; }
         }
 
+        private Tribe _energyOwner;
+        public Tribe EnergyOwner
+        {
+            get { return _energyOwner; }
+            set { _energyOwner = value; }
+        }
+
         // Hexcells are created using cube hex coords it is the responsibility of the object calling
         // the constructor to provide cube hex coordinates
         public HexCell(HexCoord position, GroundType groundType)
@@ -32,6 +39,8 @@ namespace MJM.HG
             _groundType = groundType;
 
             _energy = 0;
+
+            _energyOwner = null;
         }       
     }
 }

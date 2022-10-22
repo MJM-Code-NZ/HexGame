@@ -48,11 +48,13 @@ namespace MJM.HG
             {
                 List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
 
-                _gmInstance.MapObjectSystem.Initialize(_world, _playerPositionList);
+                _gmInstance.EntitySystem.Initialize(_world, _playerPositionList); 
+                //_gmInstance.MapObjectSystem.Initialize(_world, _playerPositionList);
             }
             else
             {
-                _gmInstance.MapObjectSystem.Initialize(_world, _params.PlayerPositionList);
+                _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);
+                //_gmInstance.MapObjectSystem.Initialize(_world, _params.PlayerPositionList);
             }
 
             CameraManager.Instance.EnableCameraControls(true);
@@ -88,7 +90,8 @@ namespace MJM.HG
             GameManager.Instance.EnableGameflowControls(false);
 
             _gmInstance.WorldSystem.Quit();
-            _gmInstance.MapObjectSystem.Quit();
+            //_gmInstance.MapObjectSystem.Quit();
+            _gmInstance.EntitySystem.Quit();
         }
     }
 }

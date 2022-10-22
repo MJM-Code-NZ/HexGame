@@ -33,17 +33,13 @@ namespace MJM.HG
 
             _camera = Camera.main;
             _camera.transform.position = new Vector3(0.0f, 0.0f, -10);
-            _camera.orthographicSize = DefaultZoom;
-
-            //_userInputActions = new UserInputActions();
-
-     
+            _camera.orthographicSize = DefaultZoom;            
         }
 
         private void Start()
         {
-            _panAction = GameManager.Instance.UserInputActions.Camera.Pan;
-            _zoomAction = GameManager.Instance.UserInputActions.Camera.Zoom;
+            _panAction = GameManager.Instance.PlayerInput.actions.FindAction("Pan");
+            _zoomAction = GameManager.Instance.PlayerInput.actions.FindAction("Zoom");
         }
 
         private void EnforceSingleInstance()
@@ -62,13 +58,16 @@ namespace MJM.HG
         {
             if (enable)
             {
-                _panAction.Enable();
-                _zoomAction.Enable();
+                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Enable(); 
+                //_panAction.Enable();
+                //_zoomAction.Enable();
             }
             else
             {
-                _panAction.Disable();
-                _zoomAction.Disable();
+                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Disable();
+                //Debug.Log("Camera control OFF");
+                //_panAction.Disable();
+                //_zoomAction.Disable();
             }
         }
 

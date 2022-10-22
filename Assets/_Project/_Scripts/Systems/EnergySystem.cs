@@ -24,9 +24,10 @@ namespace MJM.HG
         private static int _maxEnergyDiff = 0;
 
         private static List<HexCell> _possibleEnergyTargets;
-        
+               
         // Energy updates are collected in a dictionary and processed later to avoid multiple cell update events per cell
-        private static Dictionary<HexKey,int> _energyUpdates;  
+        public struct EnergyUpdate { public int amount; public Tribe energyOwner; }
+        private static Dictionary<HexKey, EnergyUpdate> _energyUpdates;  
 
         public static void ProcessWorldTick(World world)
         {
@@ -39,7 +40,7 @@ namespace MJM.HG
 
             if (_energyUpdates == null)
             {
-                _energyUpdates = new Dictionary<HexKey, int>();
+                _energyUpdates = new Dictionary<HexKey, EnergyUpdate>();
             }
             else
             {
@@ -85,7 +86,7 @@ namespace MJM.HG
                 HexCell neighborCell = World.LookupHexCell(neighbor);
 
                 if (neighborCell.GroundType == GroundType.Standard)
-                {
+                {                   
                     ProcessEnergyDifference(hexCell, neighborCell);                                
                 }
             }
@@ -95,7 +96,7 @@ namespace MJM.HG
                 HexCell _energyTarget = DetermineEnergyTarget();  // energy can move - determine target
 
                 StoreEnergyUpdate(hexCell, -1);
-                StoreEnergyUpdate(_energyTarget, 1);
+                StoreEnergyUpdate(_energyTarget, 1, hexCell.EnergyOwner);
 
                 // Debug.Log("Energy flow from " + hexCell.Position + " to " + energyTarget.Position);
             }
@@ -105,28 +106,59 @@ namespace MJM.HG
         {
             int _energyDiff = hexCell.Energy - neighborCell.Energy;
 
-            if (_energyDiff > 1) // energy could flow
-            {
-                if (_energyDiff > _maxEnergyDiff)
-                {
-                    // new highest energy diff
-                    if (_possibleEnergyTargets.Count > 0)
-                    {
-                        _possibleEnergyTargets.Clear();
-                    }
+            if (_energyDiff < 2) return; // energy difference is too small;
 
-                    _possibleEnergyTargets.Add(neighborCell);
-                    _maxEnergyDiff = _energyDiff;
-                }
-                else if (_energyDiff == _maxEnergyDiff)
-                {                  
-                    _possibleEnergyTargets.Add(neighborCell); // add to list of highest energy diff
-                }
-                else
+            // Determine if energy flow is blocked by another energyOwner
+            if (!EnergyOwnerMatch(hexCell, neighborCell)) return;
+
+            if (_energyDiff > _maxEnergyDiff)
+            {
+                // new highest energy diff
+                if (_possibleEnergyTargets.Count > 0)
                 {
-                    // lower energy diff - do nothing
+                    _possibleEnergyTargets.Clear();
+                }
+
+                _possibleEnergyTargets.Add(neighborCell);
+                _maxEnergyDiff = _energyDiff;
+            }
+            else if (_energyDiff == _maxEnergyDiff)
+            {                  
+                _possibleEnergyTargets.Add(neighborCell); // add to list of highest energy diff
+            }
+            else
+            {
+                // lower energy diff - do nothing
+            }
+            
+        }
+
+        private static bool EnergyOwnerMatch(HexCell hexCell, HexCell neighborCell)
+        {
+            if (hexCell.EnergyOwner == neighborCell.EnergyOwner) return true;
+
+            // In theory a neighbor cell should always match or be null but this check is included for safety / completeness
+            if (neighborCell.EnergyOwner != null)
+            {
+                Debug.Log($"neighbor no match and not null {neighborCell}");
+                return false;
+            }
+
+            // Determine if any of the neighbors of neighbor cell do not match hexcells energy
+            for (int direction = 0; direction < 6; direction++)
+            {
+                HexCoord neighbor2Position = neighborCell.Position.Neighbor(direction);
+
+                HexCell neighbor2Cell = World.LookupHexCell(neighbor2Position);
+
+                if (neighbor2Cell.EnergyOwner != null
+                    && neighbor2Cell.EnergyOwner != hexCell.EnergyOwner)
+                {
+                    return false;
                 }
             }
+
+            return true;                
         }
 
         private static HexCell DetermineEnergyTarget()
@@ -141,17 +173,32 @@ namespace MJM.HG
             }
         }
 
-        private static void StoreEnergyUpdate(HexCell hexCell, int amount)
+        private static void StoreEnergyUpdate(HexCell hexCell, int amount, Tribe newEnergyOwner = null)
         {
             HexKey _hexKey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
-            
-            if (_energyUpdates.ContainsKey(_hexKey))
+
+            EnergyUpdate _energyUpdate;
+
+            if (_energyUpdates.TryGetValue(_hexKey, out _energyUpdate))
             {
-                _energyUpdates[_hexKey] += amount;
+                _energyUpdate.amount += amount;
+
+                _energyUpdates[_hexKey] = _energyUpdate;
             }
             else
             {
-                _energyUpdates.Add(_hexKey, amount);
+                _energyUpdate.amount = amount;
+
+                if (hexCell.EnergyOwner == null)
+                {
+                    _energyUpdate.energyOwner = newEnergyOwner;
+                }
+                else
+                {
+                    _energyUpdate.energyOwner = hexCell.EnergyOwner;
+                }
+
+                _energyUpdates.Add(_hexKey, _energyUpdate);
             }
         }
 
@@ -168,26 +215,31 @@ namespace MJM.HG
                 {
                     HexCell hexCell = World.HexCells[HexCoordConversion.HexCoordToHexKey(mapObject.Position)];
 
-                    StoreEnergyUpdate(hexCell, 1);
+                    StoreEnergyUpdate(hexCell, 1, mapObject.Tribe);
                 }
             }
         }
 
         private static void UpdateWorldEnergy()
         {
-            foreach (KeyValuePair<HexKey, int> keyValuePair in _energyUpdates)
+            foreach (KeyValuePair<HexKey, EnergyUpdate> keyValuePair in _energyUpdates)
             {
                 HexCell hexCell = World.HexCells[keyValuePair.Key];
 
-                if (keyValuePair.Value != 0)  // update value can be zero as a result of two updates canceling each other out - do nothing         
+                if (keyValuePair.Value.amount != 0)  // update value can be zero as a result of two updates canceling each other out - do nothing         
                 {
-                    hexCell.Energy += keyValuePair.Value;
+                    hexCell.Energy += keyValuePair.Value.amount;
 
                     if (hexCell.Energy > CellEnergyCap)
                     {
                         hexCell.Energy = CellEnergyCap;
 
                         Debug.Log("Energy cap breached cell id:" + hexCell.Position);
+                    }
+
+                    if (hexCell.Energy != 0 && hexCell.EnergyOwner == null)
+                    {
+                        hexCell.EnergyOwner = keyValuePair.Value.energyOwner;
                     }
 
                     OnUpdateHexCell?.Invoke("static World Energy System", new OnHexCellEventArgs { Hexcell = hexCell });

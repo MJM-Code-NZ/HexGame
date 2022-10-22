@@ -51,7 +51,7 @@ namespace MJM.HG
         private void SetupEvents()
         {
             WorldSystem.OnUpdateWorldRender += UpdateWorldRender;
-            MapObjectSystem.OnCreateMapObject += CreateMapObjectRenderData;
+            EntitySystem.OnCreateMapObject += CreateMapObjectRenderData;
             EnergySystem.OnUpdateHexCell += UpdateHexCellRender;          
         }
 
@@ -96,7 +96,7 @@ namespace MJM.HG
         void OnDisable()
         {
             WorldSystem.OnUpdateWorldRender -= UpdateWorldRender;
-            MapObjectSystem.OnCreateMapObject -= CreateMapObjectRenderData;
+            EntitySystem.OnCreateMapObject -= CreateMapObjectRenderData;
             EnergySystem.OnUpdateHexCell -= UpdateHexCellRender;
         }
 
@@ -179,6 +179,11 @@ namespace MJM.HG
                         UpdateHexPositionTextCube(hexCell);
                     }
 
+                    if (_hexGridText == HexGridText.Tribe)
+                    {
+                        UpdateHexTribe(hexCell);
+                    }
+
                     // at this stage no need to update value of energy text across all hexes as all energy starts at 0 (the default text string)
                     // updates to energy values are handled by event call for individual hexes rather than entire world
                 }
@@ -204,6 +209,22 @@ namespace MJM.HG
                 = hexCell.Position.q + ", " + hexCell.Position.r + ", " + hexCell.Position.s;
         }
 
+        private void UpdateHexTribe(HexCell hexCell)
+        // Could be updated to event format if there is ever a need to update hex positions
+        {
+            HexKey _hexKey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
+
+            if (hexCell.EnergyOwner == null)
+            {
+                _hexTextRenderData[_hexKey].GetComponent<TextMeshPro>().text = null;
+            }
+            else
+            {
+                _hexTextRenderData[_hexKey].GetComponent<TextMeshPro>().text
+                    = hexCell.EnergyOwner.Id.ToString(); ;
+            }
+        }
+
         private void UpdateHexCellRender(object sender, OnHexCellEventArgs eventArgs)
         // Currently handles changes to energy level in cell
         // Update tile displayed in hex based on energy level
@@ -215,6 +236,8 @@ namespace MJM.HG
 
             if (_hexGridText == HexGridText.Energy)
             {
+     
+                ///////////Break this out
                 HexKey _hexkey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
 
                 if (hexCell.Energy <= _energyDisplayCap)
@@ -225,6 +248,11 @@ namespace MJM.HG
                 {
                     _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = _energyDisplayCap.ToString();
                 }
+            }
+
+            else if (_hexGridText == HexGridText.Tribe)
+            {
+                UpdateHexTribe(hexCell);
             }
         }
 

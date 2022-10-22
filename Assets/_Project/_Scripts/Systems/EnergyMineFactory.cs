@@ -6,9 +6,9 @@ namespace MJM.HG
 {
     public class EnergyMineFactory : MapObjectFactory
     {
-        protected override MapObject CreateMapObjectSubClass(HexCoord position)
+        protected override MapObject CreateMapObjectSubClass(HexCoord position, Tribe tribe)
         {
-            return new EnergyMine(position);
+            return new EnergyMine(position, tribe);
         }
     }
 }

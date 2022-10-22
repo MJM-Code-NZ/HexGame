@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8bec6874c14c32f499cdf5dae9452441
+guid: f2758f7baee9e0a408721f4b8aaef975
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -129,7 +129,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hexgamesprites _0
+      name: hexgamesprites_0
       rect:
         serializedVersion: 2
         x: 0
@@ -143,14 +143,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4507a1e41f881041b022854909ee0a0
-      internalID: 473762271
+      spriteID: 63a6b396133e9094e9bd732f295145bd
+      internalID: -38083157
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hexgamesprites _1
+      name: hexgamesprites_1
       rect:
         serializedVersion: 2
         x: 32
@@ -164,14 +164,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3b480b3a9c9dc04449ce4126ae328206
-      internalID: -698545216
+      spriteID: 4429648d64ac28847962d86b1e3e7b71
+      internalID: 313209624
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hexgamesprites _2
+      name: hexgamesprites_2
       rect:
         serializedVersion: 2
         x: 0
@@ -185,14 +185,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5822f913cc4c7a40ae29e736da6ec8c
-      internalID: 1266016998
+      spriteID: 5ac573622737c4841b8b67837bd05422
+      internalID: -1833042375
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: hexgamesprites _3
+      name: hexgamesprites_3
       rect:
         serializedVersion: 2
         x: 32
@@ -206,8 +206,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2c7c652b1771f3d4ca9fe487f2b75d34
-      internalID: -590884856
+      spriteID: 406a13f9cc40e5f4a9fe79398ef4d611
+      internalID: 968661490
       vertices: []
       indices: 
       edges: []
@@ -223,10 +223,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      hexgamesprites _3: -590884856
-      hexgamesprites _0: 473762271
-      hexgamesprites _1: -698545216
-      hexgamesprites _2: 1266016998
+      hexgamesprites_1: 313209624
+      hexgamesprites_3: 968661490
+      hexgamesprites_2: -1833042375
+      hexgamesprites_0: -38083157
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

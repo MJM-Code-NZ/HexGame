@@ -1640,7 +1640,7 @@ MonoBehaviour:
   - EnergyMine
   _mapObjectPrefabsList:
   - {fileID: 1156520650095484871, guid: 49e357b0cf81ddc45b653ce7f2d0da3b, type: 3}
-  _hexGridText: 3
+  _hexGridText: 4
   _energyDisplayCap: 5
 --- !u!4 &776826836
 Transform:

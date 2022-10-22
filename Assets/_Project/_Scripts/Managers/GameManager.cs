@@ -15,9 +15,9 @@ namespace MJM.HG
         public PlayerParameters PlayerParameters { get; private set; }
         public EnergySystemConfigurer EnergySystemConfigurer { get; private set; }
         public WorldSystem WorldSystem { get; private set; }
-        public MapObjectSystem MapObjectSystem { get; private set; }
+        public EntitySystem EntitySystem { get; private set; }
+        //public MapObjectSystem MapObjectSystem { get; private set; }
         public PlayerInput PlayerInput { get; private set; }
-        public UserInputActions UserInputActions { get; private set; }
 
         [Header("World Size")]
         [SerializeField]
@@ -40,7 +40,7 @@ namespace MJM.HG
         
             PlayerInput = GetComponent<PlayerInput>();
 
-            UserInputActions = new UserInputActions();
+           // UserInputActions = new UserInputActions();
 
             PlayerParameters = GetComponent<PlayerParameters>();
 
@@ -54,7 +54,8 @@ namespace MJM.HG
             }
 
             WorldSystem = new WorldSystem();
-            MapObjectSystem = new MapObjectSystem();
+            EntitySystem = new EntitySystem();
+            //MapObjectSystem = new MapObjectSystem();
         }
 
         private void EnforceSingleInstance()
@@ -72,7 +73,6 @@ namespace MJM.HG
         void Start()
         {
             StateMachine.ChangeState(new MainMenuState());
-            //StateMachine.ChangeState(new StartingState());
         }
 
         private void OnValidate()
@@ -149,6 +149,18 @@ namespace MJM.HG
             else
             {
                 PlayerInput.actions.FindActionMap("Gameflow").Disable();
+            }
+        }
+
+        public void EnableCameraControls(bool enable)
+        {
+            if (enable)
+            {
+                PlayerInput.actions.FindActionMap("Camera").Enable();
+            }
+            else
+            {
+                PlayerInput.actions.FindActionMap("Camera").Disable();
             }
         }
 

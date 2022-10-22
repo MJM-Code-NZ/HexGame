@@ -12,7 +12,7 @@ namespace MJM.HG
     // correct subclass object.
     public abstract class MapObjectFactory
     {
-        public MapObject CreateMapObject(HexCoord position, World world)
+        public MapObject CreateMapObject(HexCoord position, World world, Tribe tribe)
         {
             if (!world.OnMap(position))
             {
@@ -20,14 +20,14 @@ namespace MJM.HG
                 return null;
             }
 
-            MapObject mapObject = CreateMapObjectSubClass(position);
+            MapObject mapObject = CreateMapObjectSubClass(position, tribe);
 
             world.AddMapObject(position, mapObject);
 
             return mapObject;
         }
 
-        protected virtual MapObject CreateMapObjectSubClass(HexCoord position)
+        protected virtual MapObject CreateMapObjectSubClass(HexCoord position, Tribe tribe)
         {
             return null;
         }

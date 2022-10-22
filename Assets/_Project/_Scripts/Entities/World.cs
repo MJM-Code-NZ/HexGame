@@ -22,24 +22,24 @@ namespace MJM.HG
         public int AreaWithEdge => WidthWithEdge * WidthWithEdge;
 
         private Dictionary<HexKey, HexCell> _hexCells;
-        public Dictionary<HexKey, HexCell> HexCells
-        {
-            get { return _hexCells; }
-        }
+        public Dictionary<HexKey, HexCell> HexCells { get { return _hexCells; } }
 
+        private List<Tribe> _tribesList;
+        public List<Tribe> TribesList { get { return _tribesList; } }
+        
         private Dictionary<HexKey, MapObject> _mapObjects;
-        public Dictionary<HexKey, MapObject> MapObjects
-        {
-            get { return _mapObjects; }
-        }
+        public Dictionary<HexKey, MapObject> MapObjects { get { return _mapObjects; } }
 
+        
         public World(int size, int players)
         {
             _size = size;
 
             _hexCells = new Dictionary<HexKey, HexCell>(AreaWithEdge);
 
-            _mapObjects = new Dictionary<HexKey, MapObject>(players);  // Currently one map object per player
+            _tribesList = new List<Tribe>(players); 
+            
+            _mapObjects = new Dictionary<HexKey, MapObject>(players);  // Currently one map object per tribe
         }
 
         public void AddHexCell(HexCoord position, HexCell hexCell)

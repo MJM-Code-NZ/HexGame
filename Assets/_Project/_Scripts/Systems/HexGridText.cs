@@ -10,5 +10,6 @@ namespace MJM.HG
         PositionOffset,
         PositionCube,
         Energy,
+        Tribe
     }
 }
