@@ -78,5 +78,12 @@ namespace MJM.HG
         {
             _tickDuration = duration;
         }
+
+        public virtual void ResetTimer()  
+        {
+            _tickCount = 0;
+            _tickTimer = 0f;
+            _timerActive = false;
+        }
     }   
 }

@@ -103,6 +103,12 @@ namespace MJM.HG
             _worldTimer.ChangeDuration(duration);
         }
 
+        public void ResetTimers()
+        {
+            _worldTimer.ResetTimer();
+            _renderTimer.ResetTimer();
+        }
+
         void OnDisable()
         {
             

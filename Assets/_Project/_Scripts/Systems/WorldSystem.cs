@@ -25,7 +25,6 @@ namespace MJM.HG
 
         private void SetupEvents()
         {
-            //TimeManager.OnWorldTick += WorldTick;
             WorldTimer.OnWorldTick += WorldTick;
         }
 
@@ -104,13 +103,12 @@ namespace MJM.HG
         }
 
         protected void WorldTick(object sender, OnWorldTickArgs eventArgs)
-        {           
+        {
             EnergySystem.ProcessWorldTick(World);
         }
 
         public void Quit()
         {
-            //TimeManager.OnWorldTick -= WorldTick;
             WorldTimer.OnWorldTick -= WorldTick;
         }
     }

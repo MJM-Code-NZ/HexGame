@@ -74,14 +74,21 @@ namespace MJM.HG
 
         public override void EscapeRequest()
         {
-            Debug.Log("POP escape menu");
+            _worldUI.EscKeyPress();
         }
 
         public override void Exit()
         {
+            _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
+
+            TimeManager.Instance.ResetTimers();
+
             CameraManager.Instance.EnableCameraControls(false);
 
             GameManager.Instance.EnableGameflowControls(false);
+
+            _gmInstance.WorldSystem.Quit();
+            _gmInstance.MapObjectSystem.Quit();
         }
     }
 }

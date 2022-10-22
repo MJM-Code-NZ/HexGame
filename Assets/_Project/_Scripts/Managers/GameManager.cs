@@ -71,7 +71,8 @@ namespace MJM.HG
 
         void Start()
         {
-            StateMachine.ChangeState(new StartingState());
+            StateMachine.ChangeState(new MainMenuState());
+            //StateMachine.ChangeState(new StartingState());
         }
 
         private void OnValidate()
@@ -134,6 +135,11 @@ namespace MJM.HG
             StateMachine.ChangeState(new QuitState());
         }
 
+        public void HandleExitToMenuRequest()
+        {
+            StateMachine.ChangeState(new MainMenuState());
+        }
+
         public void EnableGameflowControls(bool enable)
         {
             if (enable)
@@ -148,29 +154,22 @@ namespace MJM.HG
 
         private void OnPause()
         {
-            Debug.Log("PAUSE");
-
             StateMachine.CurrentState.PauseRequest();
         }
 
         private void OnStep()
         {
-            Debug.Log("STEP");
-
             StateMachine.CurrentState.StepRequest();
         }
 
         private void OnEscape()
         {
-            Debug.Log("ESCAPE");
-
             StateMachine.CurrentState.EscapeRequest();
         }
 
         void OnDisable()
         {
-           //WorldSystem.Quit();
-           //MapObjectSystem.Quit();
+           
         }
     }   
 }
