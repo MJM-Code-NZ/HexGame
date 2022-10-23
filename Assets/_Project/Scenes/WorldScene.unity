@@ -1389,7 +1389,7 @@ MonoBehaviour:
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1635,12 +1635,37 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e6c00c1aa95ffa141997fe2f8b0b7db1, type: 2}
   - {fileID: 11400000, guid: 358b8cd0819213948a235e2547d01db3, type: 2}
   - {fileID: 11400000, guid: f84ce698900c5424ba335ef805e02aed, type: 2}
+  - {fileID: 11400000, guid: 3085a7364872d7b43abe595b72879362, type: 2}
+  - {fileID: 11400000, guid: 28ad0bc59c1a0da45965a9378cd6df56, type: 2}
+  - {fileID: 11400000, guid: 698efa488499bcd45b546bf7883dd660, type: 2}
+  - {fileID: 11400000, guid: cad7bc91e1013ac4a9994aec99be05ba, type: 2}
+  - {fileID: 11400000, guid: 5835d51d00133bd4bb3ccffc5ef916cd, type: 2}
+  - {fileID: 11400000, guid: 90a1ac8f2b98b604ebeca154dfb560ba, type: 2}
+  - {fileID: 11400000, guid: 36b6df0b8c619c946b934e016249c79a, type: 2}
+  - {fileID: 11400000, guid: df85bda659d803e47aebceeda2bd95c6, type: 2}
+  - {fileID: 11400000, guid: b4ccac925d518d046aa88bf1c2734d9c, type: 2}
+  - {fileID: 11400000, guid: 08aa49a4ea1daee428bd3bd83135094c, type: 2}
+  - {fileID: 11400000, guid: c2d0011f6a676604b9a7a561437a1f32, type: 2}
+  - {fileID: 11400000, guid: d6b34fd107719e445960a1a0500d1ab8, type: 2}
+  - {fileID: 11400000, guid: ea3f89b2fc3c20245958d8a1e3698e10, type: 2}
+  - {fileID: 11400000, guid: dc4b2336ea4cf814392f8268ed1290b1, type: 2}
+  - {fileID: 11400000, guid: bd0ae2acf0ea70346a618647d49e0276, type: 2}
+  - {fileID: 11400000, guid: 07e240b29dee28b48acf886409771866, type: 2}
+  - {fileID: 11400000, guid: ff79eaae771b6d744bfd7929e0f79a4a, type: 2}
+  - {fileID: 11400000, guid: b9eb2efc920eb7242b4fa8de271da6d1, type: 2}
+  - {fileID: 11400000, guid: d4361dcd3baf1a243a0b2420ff1e8c6c, type: 2}
+  - {fileID: 11400000, guid: 75e92a7185959784eaccf95345026e2c, type: 2}
+  - {fileID: 11400000, guid: f06453eae17df1243a543f3c98855867, type: 2}
+  - {fileID: 11400000, guid: ae939f2959ae359448c8e89a5f669493, type: 2}
+  - {fileID: 11400000, guid: 337983aeb552be04e82a2938ea33973c, type: 2}
+  - {fileID: 11400000, guid: 9d25868b3eb06fa43b37d76f823ec872, type: 2}
+  - {fileID: 11400000, guid: 857f6da95943e9a4fad7c3683aadfba2, type: 2}
   _hexGridTextPrefab: {fileID: 1166126541817253888, guid: 819480764d5f32446bfa0a1523a79361, type: 3}
   _mapObjectNames:
   - EnergyMine
   _mapObjectPrefabsList:
   - {fileID: 1156520650095484871, guid: 49e357b0cf81ddc45b653ce7f2d0da3b, type: 3}
-  _hexGridText: 4
+  _hexGridText: 3
   _energyDisplayCap: 5
 --- !u!4 &776826836
 Transform:

@@ -16,7 +16,6 @@ namespace MJM.HG
         public EnergySystemConfigurer EnergySystemConfigurer { get; private set; }
         public WorldSystem WorldSystem { get; private set; }
         public EntitySystem EntitySystem { get; private set; }
-        //public MapObjectSystem MapObjectSystem { get; private set; }
         public PlayerInput PlayerInput { get; private set; }
 
         [Header("World Size")]
@@ -39,9 +38,7 @@ namespace MJM.HG
             EnforceSingleInstance();
         
             PlayerInput = GetComponent<PlayerInput>();
-
-           // UserInputActions = new UserInputActions();
-
+          
             PlayerParameters = GetComponent<PlayerParameters>();
 
             StateMachine = new GameStateMachine();
@@ -54,8 +51,7 @@ namespace MJM.HG
             }
 
             WorldSystem = new WorldSystem();
-            EntitySystem = new EntitySystem();
-            //MapObjectSystem = new MapObjectSystem();
+            EntitySystem = new EntitySystem();          
         }
 
         private void EnforceSingleInstance()

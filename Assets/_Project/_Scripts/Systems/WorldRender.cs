@@ -15,11 +15,11 @@ namespace MJM.HG
        
         [SerializeField] private Tile _standardGround;
         [SerializeField] private Tile _edgeGround;
-        
+
         // Tiles are serialized as a list as a work around to being unable to serialize dictionaries
         // this data will be moved to a dictionary in a method in this script
         [SerializeField] private List<Tile> _energyTilesList;
-        private Dictionary<int, Tile> _energyTiles;
+        //private Dictionary<int, Tile> _energyTiles;
  
         [SerializeField]
         private GameObject _hexGridTextPrefab;
@@ -60,15 +60,15 @@ namespace MJM.HG
             _hexGrid = GameObject.Find("HexGrid").GetComponent<Grid>();
             _hexTilemap = GameObject.Find("HexTilemap").GetComponent<Tilemap>();
 
-            _energyTiles = new Dictionary<int, Tile>
-            {
-                [0] = null, // at this time there is a separate no energy tile outside this dictionary
-                [1] = _energyTilesList[0],
-                [2] = _energyTilesList[1],
-                [3] = _energyTilesList[2],
-                [4] = _energyTilesList[3],
-                [5] = _energyTilesList[4],
-            };
+            //_energyTiles = new Dictionary<int, Tile>
+            //{
+            //    [0] = null, // at this time there is a separate no energy tile outside this dictionary
+            //    [1] = _energyTilesList[0],
+            //    [2] = _energyTilesList[1],
+            //    [3] = _energyTilesList[2],
+            //    [4] = _energyTilesList[3],
+            //    [5] = _energyTilesList[4],
+            //};
         }
 
         private void SetupEntityResources()
@@ -125,22 +125,24 @@ namespace MJM.HG
 
             Vector3Int tilemapPosition = new Vector3Int(positionOffset.x, positionOffset.y, 0);
 
-            Tile _tile = SelectTile(hexCell.GroundType, hexCell.Energy);
+            Tile _tile = SelectTile(hexCell);
 
             _hexTilemap.SetTile(tilemapPosition, _tile);
         }
 
-        private Tile SelectTile(GroundType groundType, int energy)
+        private Tile SelectTile(HexCell hexCell)
         {
-            if (groundType == GroundType.None) return null;
+            if (hexCell.GroundType == GroundType.None) return null;
             
-            if (groundType == GroundType.Edge) return _edgeGround;
+            if (hexCell.GroundType == GroundType.Edge) return _edgeGround;
 
-            if (energy == 0) return _standardGround;
+            if (hexCell.Energy == 0) return _standardGround;
 
-            int cappedEnergy = Math.Min(energy, _energyDisplayCap);
+            int _cappedEnergy = Math.Min(hexCell.Energy, _energyDisplayCap);
 
-            return _energyTilesList[cappedEnergy-1];         
+            int _listIndex = hexCell.EnergyOwner.EnergyColor * _energyDisplayCap + _cappedEnergy - 1;
+
+            return _energyTilesList[_listIndex];               
         }
 
         private void CreateHexTexts(World world)
@@ -191,7 +193,6 @@ namespace MJM.HG
         }
        
         private void UpdateHexPositionTextOffset(HexCell hexCell)
-        // Could be updated to event format if there is ever a need to update hex positions
         {
             HexKey _hexKey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
 
@@ -201,12 +202,25 @@ namespace MJM.HG
         }
 
         private void UpdateHexPositionTextCube(HexCell hexCell)
-        // Could be updated to event format if there is ever a need to update hex positions
         {
             HexKey _hexKey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
 
             _hexTextRenderData[_hexKey].GetComponent<TextMeshPro>().text 
                 = hexCell.Position.q + ", " + hexCell.Position.r + ", " + hexCell.Position.s;
+        }
+
+        private void UpdateHexEnergyText(HexCell hexCell)
+        {
+            HexKey _hexkey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
+
+            if (hexCell.Energy <= _energyDisplayCap)
+            {
+                _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = hexCell.Energy.ToString();
+            }
+            else
+            {
+                _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = _energyDisplayCap.ToString();
+            }
         }
 
         private void UpdateHexTribe(HexCell hexCell)
@@ -236,18 +250,7 @@ namespace MJM.HG
 
             if (_hexGridText == HexGridText.Energy)
             {
-     
-                ///////////Break this out
-                HexKey _hexkey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
-
-                if (hexCell.Energy <= _energyDisplayCap)
-                {
-                    _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = hexCell.Energy.ToString();
-                }
-                else
-                {
-                    _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = _energyDisplayCap.ToString();
-                }
+                UpdateHexEnergyText(hexCell);
             }
 
             else if (_hexGridText == HexGridText.Tribe)

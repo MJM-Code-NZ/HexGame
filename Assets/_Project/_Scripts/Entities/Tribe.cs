@@ -5,11 +5,15 @@ namespace MJM.HG
 {
     public class Tribe
     {
-        private int _id;
+        private static int _lastColor = -1;
+
+        private static int _maxColor = 5;
+            
+            private int _id;
         public int Id { get { return _id; } }
 
-        private int _energyColour;
-        public int EnergyColour { get { return _energyColour; } }
+        private int _energyColor;
+        public int EnergyColor { get { return _energyColor; } }
 
         private List<MapObject> _mapobjectList;
         public List<MapObject> MapObjectList;
@@ -19,7 +23,15 @@ namespace MJM.HG
         {
             _id = id;
 
-            _energyColour = RandomHelper.RandomRange(0, 5);
+            _lastColor++;
+
+            if (_lastColor > _maxColor)
+            {
+                _lastColor = 0;
+            }
+
+            _energyColor = _lastColor;
+
         }
     }
 }

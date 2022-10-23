@@ -95,10 +95,12 @@ namespace MJM.HG
             {
                 HexCell _energyTarget = DetermineEnergyTarget();  // energy can move - determine target
 
-                StoreEnergyUpdate(hexCell, -1);
-                StoreEnergyUpdate(_energyTarget, 1, hexCell.EnergyOwner);
-
-                // Debug.Log("Energy flow from " + hexCell.Position + " to " + energyTarget.Position);
+                if (StoreEnergyUpdate(_energyTarget, 1, hexCell.EnergyOwner))
+                {
+                    // Only subtract energy from source hex if addition of energy to target hex succeeded
+                    StoreEnergyUpdate(hexCell, -1);
+                    // Debug.Log("Energy flow from " + hexCell.Position + " to " + energyTarget.Position);
+                }
             }
         }
 
@@ -151,7 +153,8 @@ namespace MJM.HG
 
                 HexCell neighbor2Cell = World.LookupHexCell(neighbor2Position);
 
-                if (neighbor2Cell.EnergyOwner != null
+                if (neighbor2Cell.GroundType == GroundType.Standard
+                    && neighbor2Cell.EnergyOwner != null
                     && neighbor2Cell.EnergyOwner != hexCell.EnergyOwner)
                 {
                     return false;
@@ -173,14 +176,15 @@ namespace MJM.HG
             }
         }
 
-        private static void StoreEnergyUpdate(HexCell hexCell, int amount, Tribe newEnergyOwner = null)
+        private static bool StoreEnergyUpdate(HexCell hexCell, int amount, Tribe newEnergyOwner = null)
         {
             HexKey _hexKey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
 
             EnergyUpdate _energyUpdate;
-
+       
             if (_energyUpdates.TryGetValue(_hexKey, out _energyUpdate))
             {
+                // if hex already has an update entry just change the value
                 _energyUpdate.amount += amount;
 
                 _energyUpdates[_hexKey] = _energyUpdate;
@@ -189,17 +193,68 @@ namespace MJM.HG
             {
                 _energyUpdate.amount = amount;
 
-                if (hexCell.EnergyOwner == null)
-                {
-                    _energyUpdate.energyOwner = newEnergyOwner;
+                if (hexCell.EnergyOwner != null)
+                {                   
+                    _energyUpdate.energyOwner = hexCell.EnergyOwner;
                 }
                 else
                 {
-                    _energyUpdate.energyOwner = hexCell.EnergyOwner;
+                    // when adding a new hex with no current energy owner to the update list it is also necessary to check 
+                    // for update entries for neighbor hexs and resolve any conflicts
+
+                    bool updateOK = HandleNeighborEnergyUpdates(hexCell, newEnergyOwner);
+
+                    if (!updateOK) return false; //If conflict is found do not perform this update
+
+                    _energyUpdate.energyOwner = newEnergyOwner;
                 }
 
                 _energyUpdates.Add(_hexKey, _energyUpdate);
             }
+
+            return true;
+        }
+
+        private static bool HandleNeighborEnergyUpdates(HexCell hexCell, Tribe newEnergyOwner)
+        {
+            for (int direction = 0; direction < 6; direction++)
+            {
+                HexCoord neighborPosition = hexCell.Position.Neighbor(direction);
+
+                HexCell neighborCell = World.LookupHexCell(neighborPosition);
+
+                if (neighborCell.GroundType == GroundType.Standard
+                    && neighborCell.EnergyOwner == null)                   
+                {
+                    //Potential conflict if neighbor cell is in the update dictionary
+                    EnergyUpdate _energyUpdate;
+
+                    if (_energyUpdates.TryGetValue(HexCoordConversion.HexCoordToHexKey(neighborPosition), out _energyUpdate))
+                    {
+                        if (_energyUpdate.energyOwner != newEnergyOwner)
+                        {
+                            // There is a conflict - need to reverse the update entry
+                            HandleReversingUpdate(neighborCell);
+
+                            return false;
+                        }
+                        
+                    }
+                        
+                }
+            }
+
+            return true; // no conflict found
+        }
+
+        private static void HandleReversingUpdate(HexCell hexCell)
+        {
+            // For now this will do nothing - this essentially leads to energy being lost from the world
+
+            // The approach to energy flow has become complex. The most likely resolution to reversing the updates is 
+            // to start storing the energy source on the update and then logging reversals to a cancelled update dictionary
+            // UpdateWorldEnergy will then have to process both the energy updates and update cancel dictionaries
+            // as it updates the actual energy on the hexcells. Possibly also easier to handle energy mine updates completely separately from flows.
         }
 
         // Currently only handles energy mines extracting energy from world.
