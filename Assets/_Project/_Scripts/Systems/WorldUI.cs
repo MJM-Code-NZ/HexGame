@@ -17,14 +17,17 @@ namespace MJM.HG
         [SerializeField] private Toggle _pauseToggle;
         [Space]
         [SerializeField] private GameObject _bottomRightPanel;
+        [SerializeField] private GameObject _bottomRightPanelAlt;
         [SerializeField] private GameObject _topRightPanel;
         [SerializeField] private GameObject _centerMenuPanel;
 
         private string _speedLabel1 = "Speed = ";
         private string _speedLabel2 = "s";
 
+        private bool _escapeMenuOpen = false;
+        private bool _bottomRightHidden = false;
         private bool _pausedBeforeEscapeUsed;
-
+        
         private void Start()
         {
             if (_speedSlider == null)
@@ -54,10 +57,28 @@ namespace MJM.HG
             _speedSliderValueText.text = _speedLabel1 + _speedSlider.value + _speedLabel2;
         }
 
+        public void HideClick()
+        {
+            //Debug.Log("Hide click");
+            _bottomRightHidden = true;
+           
+            _bottomRightPanel.SetActive(false);
+            _bottomRightPanelAlt.SetActive(true);
+        }
+
+        public void ShowClick()
+        {
+            //Debug.Log("Show click");
+            _bottomRightHidden = false;
+            
+            _bottomRightPanel.SetActive(true);
+            _bottomRightPanelAlt.SetActive(false);
+        }
+
         public void StepClick()
         {
             //Debug.Log("Step click");
-            if (_bottomRightPanel.activeSelf) //required to skip key press if UI is inactive
+            if (!_escapeMenuOpen)
             {
                 TimeManager.Instance.WorldStepRequest();
             }
@@ -66,28 +87,41 @@ namespace MJM.HG
         // This is the method called when the pause toggle changes
         public void PauseToggle()
         {
-            if (_bottomRightPanel.activeSelf) //required to skip key press if UI is inactive
-            {
+            //if (!_escapeMenuOpen)
+            //{
                 TimeManager.Instance.PauseWorldRequest(_pauseToggle.isOn);
-            }
+            //}
         }
 
         // This is the method for user input key press changing the toggle
         // Unsure if there is 
-        public void SetPauseToggle(bool paused)
+        public void PauseKeyPress()
         {
-            _pauseToggle.isOn = !_pauseToggle.isOn;
+            if (!_escapeMenuOpen)
+            {
+                _pauseToggle.isOn = !_pauseToggle.isOn;
+            }
         }
 
         public void EscClick()
-        {           
+        {
             // Store pause state before escape
             _pausedBeforeEscapeUsed = _pauseToggle.isOn;
-            // If not paused pause now
+            // If not paused pause now           
             if (!_pauseToggle.isOn)
                 _pauseToggle.isOn = true;
 
-            _bottomRightPanel.SetActive(false);
+            _escapeMenuOpen = true;
+
+            if (_bottomRightHidden)
+            {
+                _bottomRightPanelAlt.SetActive(false);               
+            }
+            else
+            {
+                _bottomRightPanel.SetActive(false);
+            }
+            
             _topRightPanel.SetActive(false);
 
             _centerMenuPanel.SetActive(true);
@@ -106,9 +140,19 @@ namespace MJM.HG
 
         public void ResumeClick()
         {
+            _escapeMenuOpen = false; 
+            
             _centerMenuPanel.SetActive(false);
 
-            _bottomRightPanel.SetActive(true);
+            if (_bottomRightHidden)
+            {
+                _bottomRightPanelAlt.SetActive(true);
+            }
+            else
+            {
+                _bottomRightPanel.SetActive(true);
+            }
+           
             _topRightPanel.SetActive(true);
 
             CameraManager.Instance.EnableCameraControls(true);

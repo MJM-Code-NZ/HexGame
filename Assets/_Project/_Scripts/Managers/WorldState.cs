@@ -66,7 +66,7 @@ namespace MJM.HG
 
         public override void PauseRequest()
         {
-            _worldUI.SetPauseToggle(true);
+            _worldUI.PauseKeyPress();
         }
 
         public override void StepRequest()
