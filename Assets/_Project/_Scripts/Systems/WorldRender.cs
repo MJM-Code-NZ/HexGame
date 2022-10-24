@@ -213,14 +213,14 @@ namespace MJM.HG
         {
             HexKey _hexkey = HexCoordConversion.HexCoordToHexKey(hexCell.Position);
 
-            if (hexCell.Energy <= _energyDisplayCap)
-            {
+            //if (hexCell.Energy <= _energyDisplayCap)
+            //{
                 _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = hexCell.Energy.ToString();
-            }
-            else
-            {
-                _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = _energyDisplayCap.ToString();
-            }
+            //}
+            //else
+            //{
+            //    _hexTextRenderData[_hexkey].GetComponent<TextMeshPro>().text = _energyDisplayCap.ToString();
+            //}
         }
 
         private void UpdateHexTribe(HexCell hexCell)

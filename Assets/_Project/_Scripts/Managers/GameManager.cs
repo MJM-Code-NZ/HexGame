@@ -50,6 +50,16 @@ namespace MJM.HG
                 EnergySystemConfigurer = new EnergySystemConfigurer();
             }
 
+#if UNITY_EDITOR
+            if (PlayerInput == null 
+                || PlayerParameters == null
+                || GetComponent<TimeManager>() == null
+                || GetComponent<CameraManager>() == null)
+            {
+                Debug.Log("Missing component(s) on Managers gameObject {object}");
+            }
+#endif
+
             WorldSystem = new WorldSystem();
             EntitySystem = new EntitySystem();          
         }
@@ -68,6 +78,18 @@ namespace MJM.HG
 
         void Start()
         {
+#if UNITY_EDITOR
+            // if game was run in editor mode with any scenes other than MainScene open close all other scenes before starting
+            for (int i = 1; i < SceneManager.sceneCount; i++)
+            {
+                Scene _scene = SceneManager.GetSceneAt(i);
+                
+                if (_scene.isLoaded && _scene.name != MainScene)
+                {
+                    ProcessSceneUnload(_scene.name);
+                }
+            }
+#endif
             StateMachine.ChangeState(new MainMenuState());
         }
 
