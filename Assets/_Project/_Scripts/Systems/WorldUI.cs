@@ -35,7 +35,7 @@ namespace MJM.HG
                 Debug.Log($"Speed slider not linked to UI script {this}");
             }
 
-            SetInitialSliderTexts();
+            SetInitialSliderValues();
 
             //Ensure center menu panel is hidden
             _centerMenuPanel.SetActive(false);
@@ -49,12 +49,15 @@ namespace MJM.HG
             TimeManager.Instance.UpdateWorldSpeedRequest(_speedSlider.value);
         }
 
-        private void SetInitialSliderTexts()
+        // This is necessary to return the game speed to the default speed when a new game is started.
+        // If the speed was not reset the speed from the first game carries over to later games.
+        private void SetInitialSliderValues()
         {
             _speedSliderMinText.text = _speedSlider.minValue.ToString();
             _speedSliderMaxText.text = _speedSlider.maxValue.ToString();
+            _speedSlider.value = 1.0f;
 
-            _speedSliderValueText.text = _speedLabel1 + _speedSlider.value + _speedLabel2;
+            SpeedSliderChanged();
         }
 
         public void HideClick()
@@ -86,11 +89,8 @@ namespace MJM.HG
 
         // This is the method called when the pause toggle changes
         public void PauseToggle()
-        {
-            //if (!_escapeMenuOpen)
-            //{
-                TimeManager.Instance.PauseWorldRequest(_pauseToggle.isOn);
-            //}
+        {            
+            TimeManager.Instance.PauseWorldRequest(_pauseToggle.isOn);            
         }
 
         // This is the method for user input key press changing the toggle

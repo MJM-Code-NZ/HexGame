@@ -9,7 +9,9 @@ namespace MJM.HG
     public class MainMenuUI : MonoBehaviour
     {
         [SerializeField] private Slider _worldSizeSlider;
+        public Slider WorldSizeSlider {  get { return _worldSizeSlider; } }
         [SerializeField] private Slider _playerSlider;
+        public Slider PlayerSlider { get { return _playerSlider; } }
         [Space]
         [SerializeField] private TextMeshProUGUI _worldSliderValueText;
         [SerializeField] private TextMeshProUGUI _worldSliderMinText;
@@ -18,6 +20,9 @@ namespace MJM.HG
         [SerializeField] private TextMeshProUGUI _playerSliderValueText;
         [SerializeField] private TextMeshProUGUI _playerSliderMinText;
         [SerializeField] private TextMeshProUGUI _playerSliderMaxText;
+        [Space]
+        [SerializeField] private Toggle _autoToggle;
+
         
         private string _worldSizeLabel = "World Size = ";
         private string _playerLabel = "Players = ";
@@ -78,6 +83,12 @@ namespace MJM.HG
 
             GameManager.Instance.HandleQuitGameRequest();
 
+        }
+
+        public void AutoToggle()
+        {
+            Debug.Log($"Auto toggle change {_autoToggle.isOn}");
+            GameManager.Instance.HandleAutoPlayRequest(_autoToggle.isOn);
         }
     }
 }

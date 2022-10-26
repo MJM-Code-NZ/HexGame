@@ -5,16 +5,32 @@ using UnityEngine;
 
 namespace MJM.HG
 {
+    
     public class MainMenuState : GameState
-    {
-        public override void Execute()
+    {        
+        public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
         {
-            _gmInstance.ProcessSceneLoad(GameManager.MenuScene);
+            base.Awake();
+
+            _stateName = GameStateName.MainMenuState;           
         }
         
-        public override void Exit()
+        public override void Enter(GameStateName prevGameState)
         {
-            _gmInstance.ProcessSceneUnload(GameManager.MenuScene);
+            if (!(prevGameState == GameStateName.MainMenuAutoState))
+            {
+                _gmInstance.ProcessSceneLoad(GameManager.MenuScene);
+            }
+
+            Execute();
+        }
+        
+        public override void Exit(GameStateName nextGameState)
+        {
+            if (!(nextGameState == GameStateName.MainMenuAutoState))
+            {
+                _gmInstance.ProcessSceneUnload(GameManager.MenuScene);
+            }
         }
     }
 }

@@ -4,16 +4,24 @@ using UnityEngine;
 
 namespace MJM.HG
 {
-    public class GameState
+    public class GameState : MonoBehaviour
     {
         protected GameManager _gmInstance;
-        
-        protected GameState()
+
+        protected GameStateName _stateName = GameStateName.None;
+        public GameStateName StateName { get { return _stateName; } }
+
+        //protected GameState()
+        //{
+        //    _gmInstance = GameManager.Instance;
+        //}
+
+        public virtual void Awake()
         {
             _gmInstance = GameManager.Instance;
         }
         
-        public virtual void Enter()
+        public virtual void Enter(GameStateName prevGameStateName)
         {
             Execute();
         }
@@ -35,15 +43,15 @@ namespace MJM.HG
 
         public virtual void StepRequest()
         {
-            
+
         }
 
         public virtual void EscapeRequest()
         {
-            
+
         }
 
-        public virtual void Exit()
+        public virtual void Exit(GameStateName nextGameStateName)
         {
 
         }

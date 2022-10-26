@@ -11,7 +11,7 @@ namespace MJM.HG
     {
         public static GameManager Instance { get; private set; }
 
-        public GameStateMachine StateMachine { get; private set; }
+        public GameStateMachine GameStateMachine { get; private set; }
         public PlayerParameters PlayerParameters { get; private set; }
         public EnergySystemConfigurer EnergySystemConfigurer { get; private set; }
         public WorldSystem WorldSystem { get; private set; }
@@ -41,7 +41,7 @@ namespace MJM.HG
           
             PlayerParameters = GetComponent<PlayerParameters>();
 
-            StateMachine = new GameStateMachine();
+            GameStateMachine = GetComponent<GameStateMachine>();
 
             EnergySystemConfigurer = GameObject.Find("Setup").GetComponent<EnergySystemConfigurer>();
 
@@ -90,7 +90,7 @@ namespace MJM.HG
                 }
             }
 #endif
-            StateMachine.ChangeState(new MainMenuState());
+            GameStateMachine.ChangeState(GameStateName.MainMenuState);
         }
 
         private void OnValidate()
@@ -118,10 +118,10 @@ namespace MJM.HG
             else
                 Debug.Log($"Scene load failed: {sceneName}");
 
-            // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scens in SceneManager to change
+            // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scene in SceneManager to change
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
 
-            StateMachine.CurrentState.LoadSceneComplete();
+            GameStateMachine.CurrentState.LoadSceneComplete();
         }
         public void ProcessSceneUnload(string sceneName)
         {
@@ -145,17 +145,32 @@ namespace MJM.HG
 
         public void HandleNewGameRequest(int worldSize, int numberOfPlayers)
         {
-            StateMachine.ChangeState(new WorldState(worldSize, numberOfPlayers));
+            _worldSize = worldSize;
+            _numberOfPlayers = numberOfPlayers;
+            
+            GameStateMachine.ChangeState(GameStateName.WorldState); 
         }
 
         public void HandleQuitGameRequest()
         {
-            StateMachine.ChangeState(new QuitState());
+            GameStateMachine.ChangeState(GameStateName.QuitState);
         }
 
         public void HandleExitToMenuRequest()
         {
-            StateMachine.ChangeState(new MainMenuState());
+            GameStateMachine.ChangeState(GameStateName.MainMenuState);
+        }
+
+        public void HandleAutoPlayRequest(bool autoPlay)
+        {
+            if (autoPlay)
+            {
+                GameStateMachine.ChangeState(GameStateName.MainMenuAutoState);
+            }
+            else
+            {
+                GameStateMachine.ChangeState(GameStateName.MainMenuState);
+            }
         }
 
         public void EnableGameflowControls(bool enable)
@@ -184,17 +199,17 @@ namespace MJM.HG
 
         private void OnPause()
         {
-            StateMachine.CurrentState.PauseRequest();
+            GameStateMachine.CurrentState.PauseRequest();
         }
 
         private void OnStep()
         {
-            StateMachine.CurrentState.StepRequest();
+            GameStateMachine.CurrentState.StepRequest();
         }
 
         private void OnEscape()
         {
-            StateMachine.CurrentState.EscapeRequest();
+            GameStateMachine.CurrentState.EscapeRequest();
         }
 
         void OnDisable()

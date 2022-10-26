@@ -2,9 +2,12 @@ namespace MJM.HG
 {
     public enum GameStateName
     {
-        Unknown,
-        Starting,
-        StartMenu,
-        World,
+        None,
+        //Starting,
+        MainMenuState,
+        WorldState,
+        MainMenuAutoState,
+        WorldAutoState,
+        QuitState
     }
 }

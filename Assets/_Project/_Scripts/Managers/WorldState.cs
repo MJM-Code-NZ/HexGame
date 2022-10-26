@@ -9,20 +9,23 @@ namespace MJM.HG
     
 
     public class WorldState : GameState
-    {
-        int _worldSize;
-        int _numberOfPlayers;
-        PlayerParameters _params;
+    {       
+        // Still considering whether storing these 3 variables is a good idea versus looking them up from GameManager when needed
+        protected int _worldSize;
+        protected int _numberOfPlayers;
+        protected PlayerParameters _params;
 
-        const string WorldUIGameObjectName = "WorldUI";
-        WorldUI _worldUI;
+        protected const string WorldUIGameObjectName = "WorldUI";
+        protected WorldUI _worldUI;
 
-        public WorldState(int worldSize, int numberOfPlayers) : base()
+        public override void Awake()
         {
-            _worldSize = worldSize;
-            _numberOfPlayers = numberOfPlayers;
+            base.Awake();
 
-            _params = GameManager.Instance.PlayerParameters;
+            _stateName = GameStateName.WorldState;
+            _worldSize = _gmInstance.WorldSize;
+            _numberOfPlayers = _gmInstance.NumberOfPlayers;
+            _params = _gmInstance.PlayerParameters;
 
             if (_params.OverrideMenuPlayers)
             {
@@ -30,16 +33,20 @@ namespace MJM.HG
             }
         }
         
-        public override void Execute()
+        public override void Enter(GameStateName prevGameState)
         {
-            _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
+            if (!(prevGameState == GameStateName.WorldAutoState))
+            {
+                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);               
+            }
+
+            Execute();
         }
 
         public override void LoadSceneComplete()
         {
             _gmInstance.EnergySystemConfigurer.ConfigureEnergySystem();
 
-            //PlayerParameters _params = GameManager.Instance.PlayerParameters;
             _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
 
             World _world = _gmInstance.WorldSystem.Initialize(_worldSize, _numberOfPlayers);
@@ -49,12 +56,10 @@ namespace MJM.HG
                 List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
 
                 _gmInstance.EntitySystem.Initialize(_world, _playerPositionList); 
-                //_gmInstance.MapObjectSystem.Initialize(_world, _playerPositionList);
-            }
+                            }
             else
             {
-                _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);
-                //_gmInstance.MapObjectSystem.Initialize(_world, _params.PlayerPositionList);
+                _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);               
             }
 
             CameraManager.Instance.EnableCameraControls(true);
@@ -79,19 +84,21 @@ namespace MJM.HG
             _worldUI.EscKeyPress();
         }
 
-        public override void Exit()
+        public override void Exit(GameStateName nextGameStateName)
         {
-            _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
+            if (!(nextGameStateName == GameStateName.WorldAutoState))
+            {
+                _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
 
-            TimeManager.Instance.ResetTimers();
+                TimeManager.Instance.ResetTimers();
 
-            CameraManager.Instance.EnableCameraControls(false);
+                CameraManager.Instance.EnableCameraControls(false);
 
-            GameManager.Instance.EnableGameflowControls(false);
+                GameManager.Instance.EnableGameflowControls(false);
 
-            _gmInstance.WorldSystem.Quit();
-            //_gmInstance.MapObjectSystem.Quit();
-            _gmInstance.EntitySystem.Quit();
+                _gmInstance.WorldSystem.Quit();
+                _gmInstance.EntitySystem.Quit();
+            }
         }
     }
 }
