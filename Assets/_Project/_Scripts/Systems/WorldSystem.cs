@@ -5,8 +5,11 @@ using Unity.Mathematics;
 
 namespace MJM.HG
 {
+   
     public class WorldSystem
     {
+        public WorldRender WorldRender { get; private set; }
+        
         public static event EventHandler<OnWorldEventArgs> OnUpdateWorldRender;
 
         private World _world;
@@ -18,8 +21,11 @@ namespace MJM.HG
         public World Initialize(int worldSize, int players)
         {
             SetupEvents();
+            
+            WorldRender = GameObject.Find("World").GetComponent<WorldRender>();
+            
             World _world = GenerateWorldMap(worldSize, players);
-
+           
             return _world;
         }
 
@@ -105,6 +111,11 @@ namespace MJM.HG
         protected void WorldTick(object sender, OnWorldTickArgs eventArgs)
         {
             EnergySystem.ProcessWorldTick(World);
+        }
+
+        public Tribe GetRandomTribe()
+        {
+            return World.TribesList[RandomHelper.RandomRange(0, World.TribesList.Count - 1)];
         }
 
         public void Quit()

@@ -52,6 +52,8 @@ namespace MJM.HG
 
                 newEnergyMine = (EnergyMine)_energyMineFactory.CreateMapObject(position, world, _tribe);
 
+                _tribe.MapObjectList.Add(newEnergyMine);
+
                 OnCreateMapObject?.Invoke(this, new OnMapObjectEventArgs { MapObject = newEnergyMine });                   
             }
             else

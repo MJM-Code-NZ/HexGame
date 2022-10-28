@@ -22,8 +22,9 @@ namespace MJM.HG
         [SerializeField] private TextMeshProUGUI _playerSliderMaxText;
         [Space]
         [SerializeField] private Toggle _autoToggle;
+        public Toggle AutoToggle { get { return _autoToggle; } }
 
-        
+
         private string _worldSizeLabel = "World Size = ";
         private string _playerLabel = "Players = ";
 
@@ -85,7 +86,7 @@ namespace MJM.HG
 
         }
 
-        public void AutoToggle()
+        public void AutoToggleChange()
         {
             Debug.Log($"Auto toggle change {_autoToggle.isOn}");
             GameManager.Instance.HandleAutoPlayRequest(_autoToggle.isOn);

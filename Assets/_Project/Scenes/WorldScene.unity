@@ -1881,7 +1881,7 @@ MonoBehaviour:
   - EnergyMine
   _mapObjectPrefabsList:
   - {fileID: 1156520650095484871, guid: 49e357b0cf81ddc45b653ce7f2d0da3b, type: 3}
-  _hexGridText: 3
+  _hexGridText: 0
   _energyDisplayCap: 5
 --- !u!4 &776826836
 Transform:
@@ -3833,6 +3833,7 @@ MonoBehaviour:
   _speedSliderMinText: {fileID: 262161087}
   _speedSliderMaxText: {fileID: 245663277}
   _pauseToggle: {fileID: 233342012}
+  _autoButton: {fileID: 1876794009}
   _bottomRightPanel: {fileID: 1649297179}
   _bottomRightPanelAlt: {fileID: 226396891}
   _topRightPanel: {fileID: 1496486485}
@@ -4287,7 +4288,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1598818521}
         m_TargetAssemblyTypeName: MJM.HG.WorldUI, Assembly-CSharp
-        m_MethodName: EscClick
+        m_MethodName: AutoClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

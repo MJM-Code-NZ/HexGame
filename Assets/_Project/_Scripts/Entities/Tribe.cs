@@ -16,8 +16,7 @@ namespace MJM.HG
         public int EnergyColor { get { return _energyColor; } }
 
         private List<MapObject> _mapobjectList;
-        public List<MapObject> MapObjectList;
-
+        public List<MapObject> MapObjectList { get { return _mapobjectList; } }
 
         public Tribe(int id)
         {
@@ -31,6 +30,8 @@ namespace MJM.HG
             }
 
             _energyColor = _lastColor;
+
+            _mapobjectList = new List<MapObject>();
 
         }
     }

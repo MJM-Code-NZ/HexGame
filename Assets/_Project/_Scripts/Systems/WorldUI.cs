@@ -9,12 +9,16 @@ namespace MJM.HG
     public class WorldUI : MonoBehaviour
     {
         [SerializeField] private Slider _speedSlider;
+        public Slider SpeedSlider { get { return _speedSlider; } }
+
         [Space]
         [SerializeField] private TextMeshProUGUI _speedSliderValueText;
         [SerializeField] private TextMeshProUGUI _speedSliderMinText;
         [SerializeField] private TextMeshProUGUI _speedSliderMaxText;
         [Space]
         [SerializeField] private Toggle _pauseToggle;
+        [Space]
+        [SerializeField] private Button _autoButton;
         [Space]
         [SerializeField] private GameObject _bottomRightPanel;
         [SerializeField] private GameObject _bottomRightPanelAlt;
@@ -42,7 +46,7 @@ namespace MJM.HG
         }
 
         public void SpeedSliderChanged()
-        {            
+        {
             _speedSlider.value = Mathf.Round((_speedSlider.value) * 5) / 5;
             _speedSliderValueText.text = _speedLabel1 + _speedSlider.value + _speedLabel2;
 
@@ -89,7 +93,12 @@ namespace MJM.HG
 
         // This is the method called when the pause toggle changes
         public void PauseToggle()
-        {            
+        {
+            if (_autoButton.IsActive())
+            {
+                AutoClick();
+            }
+            
             TimeManager.Instance.PauseWorldRequest(_pauseToggle.isOn);            
         }
 
@@ -105,6 +114,11 @@ namespace MJM.HG
 
         public void EscClick()
         {
+            if (_autoButton.IsActive())
+            {
+                AutoClick();
+            }
+            
             // Store pause state before escape
             _pausedBeforeEscapeUsed = _pauseToggle.isOn;
             // If not paused pause now           
@@ -158,9 +172,21 @@ namespace MJM.HG
             CameraManager.Instance.EnableCameraControls(true);
 
             // Restore pause state prior to escape menu opening.
-            // Needs to be after the set active calls uo toggle onchangevalue will not execute
+            // Needs to be after the set active calls so toggle onchangevalue will not execute
             if (!_pausedBeforeEscapeUsed)
                 _pauseToggle.isOn = false;
+        }
+
+        public void AutoShow(bool show)
+        {
+            _autoButton.gameObject.SetActive(show);
+        }
+
+        public void AutoClick()
+        {
+            AutoShow(false);
+
+            GameManager.Instance.HandleWorldAutoPlayOffRequest();
         }
 
         public void ExitToMenuClick()

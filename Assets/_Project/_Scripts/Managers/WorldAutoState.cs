@@ -10,64 +10,118 @@ namespace MJM.HG
 
     public class WorldAutoState : WorldState
     {
-        //int _worldSize;
-        //int _numberOfPlayers;
-        //PlayerParameters _params;
+        private const int _maxAutoCycle = 5;
+        private const int _closeZoom = 4;
+        private const float _autoDuration = 10f;
 
-       // const string WorldUIGameObjectName = "WorldUI";
-        //WorldUI _worldUI;
+        public override void Awake()
+        {
+            base.Awake();
 
-        //public WorldAutoState(int worldSize, int numberOfPlayers) : base(worldSize, numberOfPlayers)
-        //{
-            // MORE REWORK
+            _stateName = GameStateName.WorldAutoState;      
+        }
+
+        public override void Enter(GameStateName prevGameState)
+        {
+            if (!(prevGameState == GameStateName.WorldState))
+            {
+                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
+            }
+            else
+            {
+                Execute();
+            }
+        }
+
+        public override void LoadSceneComplete(GameStateName prevGameState)
+        {
+            base.LoadSceneComplete(prevGameState);
+
+            _worldUI.AutoShow(true);
+
+            Execute();
+        }
+
+        // This is the extra "automation" logic for the world screen
+        public override void Execute()
+        {
+            Debug.Log("Starting World Coroutine");
+            StartCoroutine(AutoProcess());
+        }
+
+        public IEnumerator AutoProcess()
+        {
+            // find next pan position
+            bool atPosition;
             
-            
-            //_worldSize = worldSize;
-            //_numberOfPlayers = numberOfPlayers;
+            Vector3 _worldPosition;
+            Vector3 _cameraPosition;
 
-            //_params = GameManager.Instance.PlayerParameters;
+            for (int autoCycle = 1; autoCycle <= _maxAutoCycle; autoCycle++)
+            {
+                _cameraPosition = CameraManager.Instance.Camera.transform.position;
 
-            //if (_params.OverrideMenuPlayers)
-            //{
-            //    _numberOfPlayers = _params.PlayerPositionList.Count;
-            //}
-        //}
-        
-        //public override void Enter(GameStateName prevGameState)
-        //{
-        //    _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
+                
+                CameraManager.Instance.SetAutoZoom(_worldSize + 2, _autoDuration);
 
-        //    Execute();
-        //}
+                yield return new WaitUntil(ZoomComplete);
+                
+                yield return new WaitForSeconds(5);
 
-        //public override void LoadSceneComplete()
-        //{
-        //    _gmInstance.EnergySystemConfigurer.ConfigureEnergySystem();
+                do
+                {
+                    Tribe _selectedTribe = _gmInstance.WorldSystem.GetRandomTribe();
 
-        //    //PlayerParameters _params = GameManager.Instance.PlayerParameters;
-        //    _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
+                    HexCoord _tribePosition = _selectedTribe.MapObjectList[0].Position;
 
-        //    World _world = _gmInstance.WorldSystem.Initialize(_worldSize, _numberOfPlayers);
+                    _worldPosition = _gmInstance.WorldSystem.WorldRender.GridToWorld(HexCoordConversion.HexCoordToOffset(_tribePosition));
 
-        //    if (!_params.OverrideMenuPlayers)
-        //    {
-        //        List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
+                    atPosition = Math.Round(_cameraPosition.x - _worldPosition.x, 1) == 0
+                        && Math.Round(_cameraPosition.y - _worldPosition.y, 1) == 0;
+                }
+                while (_numberOfPlayers != 1 && atPosition);
 
-        //        _gmInstance.EntitySystem.Initialize(_world, _playerPositionList); 
-        //        //_gmInstance.MapObjectSystem.Initialize(_world, _playerPositionList);
-        //    }
-        //    else
-        //    {
-        //        _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);
-        //        //_gmInstance.MapObjectSystem.Initialize(_world, _params.PlayerPositionList);
-        //    }
+                Debug.Log($"Pan Found {_worldPosition}");
 
-        //    CameraManager.Instance.EnableCameraControls(true);
+                CameraManager.Instance.SetAutoPan(_worldPosition, _autoDuration);
 
-        //    GameManager.Instance.EnableGameflowControls(true);
+                yield return new WaitUntil(PanComplete);
 
-        //    TimeManager.Instance.StartWorldTime();
-        //}
+                Debug.Log($"Pan Complete {CameraManager.Instance.Camera.transform.position}");
+
+                yield return new WaitForSeconds(5);
+
+                CameraManager.Instance.SetAutoZoom(_closeZoom, _autoDuration);
+
+                yield return new WaitUntil(ZoomComplete);
+
+                yield return new WaitForSeconds(5);
+
+                if (_worldUI.SpeedSlider.value > 0.2f)
+                {
+                    _worldUI.SpeedSlider.value -= 0.2f;
+                }
+            }
+
+            CameraManager.Instance.SetAutoPan(Vector3.zero, _autoDuration);
+
+            yield return new WaitUntil(PanComplete);
+
+            CameraManager.Instance.SetAutoZoom(_worldSize + 2, _autoDuration);
+
+            yield return new WaitUntil(ZoomComplete);
+
+            yield return new WaitForSeconds(5);
+
+            _worldUI.EscClick();
+
+            yield return new WaitForSeconds(5);
+
+            _gmInstance.HandleExitToMenuRequest(true);
+        }
+
+        private bool ZoomComplete() => !CameraManager.Instance.AutoZoomOn;
+        private bool PanComplete() => !CameraManager.Instance.AutoPanOn;
 
         //public override void PauseRequest()
         //{
@@ -84,21 +138,29 @@ namespace MJM.HG
         //    _worldUI.EscKeyPress();
         //}
 
-        //public override void Exit(GameState nextGameState)
-        //{
-        //    if (!(nextGameState is WorldAutoState))
-        //    {
-        //        _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
+        public override void Exit(GameStateName nextGameStateName)
+        {
+            StopCoroutine("AutoProcess");
 
-        //        TimeManager.Instance.ResetTimers();
+            CameraManager.Instance.DisableAuto();
 
-        //        CameraManager.Instance.EnableCameraControls(false);
+            if (!(nextGameStateName == GameStateName.WorldState))
+            {
+                _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
 
-        //        GameManager.Instance.EnableGameflowControls(false);
+                TimeManager.Instance.ResetTimers();
 
-        //        _gmInstance.WorldSystem.Quit();
-        //        _gmInstance.EntitySystem.Quit();
-        //    }
-        //}
+                CameraManager.Instance.EnableCameraControls(false);
+
+                CameraManager.Instance.Reset();
+
+                GameManager.Instance.EnableGameflowControls(false);
+
+                _gmInstance.WorldSystem.Quit();
+                _gmInstance.EntitySystem.Quit();
+
+                
+            }            
+        }
     }
 }

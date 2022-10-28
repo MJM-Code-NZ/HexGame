@@ -21,23 +21,31 @@ namespace MJM.HG
         {
             if (!(prevGameState == GameStateName.MainMenuState))
             {
-                _gmInstance.ProcessSceneLoad(GameManager.MenuScene);
+                _gmInstance.ProcessSceneLoad(GameManager.MenuScene, prevGameState);
             }
             else
             {
                 _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
+
+                Execute();
             }
+
+            
+        }
+
+        public override void LoadSceneComplete(GameStateName prevGameState)
+        {
+            _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
+            
+            _mainMenuUI.AutoToggle.isOn = true;
 
             Execute();
         }
 
-        public override void LoadSceneComplete()
-        {
-            _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
-        }
-
         public override void Exit(GameStateName nextGameState)
         {
+            StopCoroutine("AutoProcess");
+            
             if (!(nextGameState == GameStateName.MainMenuState))
             {
                 _gmInstance.ProcessSceneUnload(GameManager.MenuScene);
@@ -49,6 +57,7 @@ namespace MJM.HG
         // This is the extra "automation" logic for the menu screen
         public override void Execute()
         {
+            Debug.Log("Starting Menu Coroutine");
             StartCoroutine(AutoProcess());
         }
 
@@ -89,7 +98,7 @@ namespace MJM.HG
 
             yield return new WaitForSeconds(4);
 
-            _gmInstance.HandleNewGameRequest((int)_mainMenuUI.WorldSizeSlider.value, (int)_mainMenuUI.PlayerSlider.value);
+            _gmInstance.HandleNewGameRequest((int)(_mainMenuUI.WorldSizeSlider.value - 1) / 2, (int)_mainMenuUI.PlayerSlider.value, true);
 
             yield return null;
         }

@@ -9,10 +9,9 @@ namespace MJM.HG
     {
         public static CameraManager Instance { get; private set; }
 
-        private Camera _camera;
-
-        //private UserInputActions _userInputActions;
-
+        //private Camera _camera;
+        public Camera Camera { get; private set; }
+       
         private InputAction _panAction;
         private InputAction _zoomAction;
 
@@ -21,19 +20,29 @@ namespace MJM.HG
         [SerializeField] private float ZoomSpeed = 8f;
 
         [Space()]
-        [SerializeField] public float DefaultZoom = 6f;
-
+        [SerializeField] private float DefaultZoom = 6f;
+        [SerializeField] private Vector3 DefaultPosition = new Vector3(0, 0, -10);
         [Space()]
-        [SerializeField] public float MinZoom = 2f;
-        [SerializeField] public float MaxZoom = 20f;
+        [SerializeField] private float MinZoom = 2f;
+        [SerializeField] private float MaxZoom = 20f;
+
+        private bool _autoPanOn;
+        public bool AutoPanOn { get { return _autoPanOn; } }
+
+        private bool _autoZoomOn;
+        public bool AutoZoomOn { get { return _autoZoomOn; } }
+
+        private Vector3 _autoPanTarget;
+        private float _autoZoomSize;
+        private float _autoDuration;
+
 
         void Awake()
         {
             EnforceSingleInstance();
 
-            _camera = Camera.main;
-            _camera.transform.position = new Vector3(0.0f, 0.0f, -10);
-            _camera.orthographicSize = DefaultZoom;            
+            Camera = Camera.main;
+            Reset();     
         }
 
         private void Start()
@@ -54,20 +63,21 @@ namespace MJM.HG
             }
         }
 
+        public void Reset()
+        {
+            Camera.transform.position = DefaultPosition;
+            Camera.orthographicSize = DefaultZoom;
+        }
+
         public void EnableCameraControls(bool enable)
         {
             if (enable)
             {
-                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Enable(); 
-                //_panAction.Enable();
-                //_zoomAction.Enable();
+                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Enable();                
             }
             else
             {
-                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Disable();
-                //Debug.Log("Camera control OFF");
-                //_panAction.Disable();
-                //_zoomAction.Disable();
+                GameManager.Instance.PlayerInput.actions.FindActionMap("Camera").Disable();               
             }
         }
 
@@ -81,34 +91,128 @@ namespace MJM.HG
         private void UpdatePan()
         {           
             Vector2 panValue = _panAction.ReadValue<Vector2>();
-            Vector3 panDisplacement = PanSpeed * panValue;
 
-            _camera.transform.position = Vector3.Lerp(
-                _camera.transform.position,
-                _camera.transform.position + panDisplacement,
-                Time.deltaTime
-                );
+            if (panValue != Vector2.zero)
+            {
+                _autoPanOn = false;
+
+                Vector3 panDisplacement = PanSpeed * panValue;
+
+                Camera.transform.position = Vector3.Lerp(
+                    Camera.transform.position,
+                    Camera.transform.position + panDisplacement,
+                    Time.deltaTime
+                    );
+            }
+            else
+            {
+                if (_autoPanOn)
+                    AutoPan();
+            }
         }
 
         private void UpdateZoom()
         {           
             float zoomValue = _zoomAction.ReadValue<float>();
-            float zoomDisplacement = ZoomSpeed * zoomValue;
 
-            _camera.orthographicSize = Mathf.Lerp(
-                _camera.orthographicSize,
-                _camera.orthographicSize + zoomDisplacement,
-                Time.deltaTime
+            if (zoomValue != 0)
+            {
+
+                float zoomDisplacement = ZoomSpeed * zoomValue;
+
+                Camera.orthographicSize = Mathf.Lerp(
+                    Camera.orthographicSize,
+                    Camera.orthographicSize + zoomDisplacement,
+                    Time.deltaTime
+                    );
+
+                Camera.orthographicSize = Mathf.Clamp(
+                    Camera.orthographicSize,
+                    MinZoom,
+                    MaxZoom
+                    );
+            }
+            else
+            {
+                if (_autoZoomOn)
+                    AutoZoom();
+            }
+        }
+
+        public void SetAutoPan(Vector3 targetPosition, float duration)
+        {
+            _autoPanTarget = targetPosition;
+            _autoPanTarget.z = Camera.transform.position.z;
+            _autoDuration = duration;
+            _autoPanOn = true;
+        }
+
+        public void SetAutoZoom(float targetSize, float duration)
+        {
+            _autoZoomSize = targetSize;
+            _autoDuration = duration;
+            _autoZoomOn = true;
+        }
+
+        public void DisableAuto()
+        {
+            _autoPanOn = false;
+            _autoZoomOn = false;
+        }
+
+        private void AutoPan()
+        {
+            float _proportion;
+
+            if (Time.deltaTime < _autoDuration)
+            {
+                _proportion = Time.deltaTime / _autoDuration;
+                _autoDuration -= Time.deltaTime;
+            }
+            else
+            {
+                _proportion = 1;
+                _autoPanOn = false;
+            }
+
+            Camera.transform.position = Vector3.Lerp(
+                Camera.transform.position,                      
+                _autoPanTarget,
+                _proportion
+                );
+        }
+
+        private void AutoZoom()
+        {
+            //float zoomDisplacement = ZoomSpeed * zoomValue;
+
+            float _proportion;
+
+            if (Time.deltaTime < _autoDuration)
+            {
+                _proportion = Time.deltaTime / _autoDuration;
+                _autoDuration -= Time.deltaTime;
+            }
+            else
+            {
+                _proportion = 1;
+                _autoZoomOn = false;
+            }
+
+            Camera.orthographicSize = Mathf.Lerp(
+                Camera.orthographicSize,
+                _autoZoomSize,
+                _proportion
                 );
 
-            _camera.orthographicSize = Mathf.Clamp(
-                _camera.orthographicSize,
+            Camera.orthographicSize = Mathf.Clamp(
+                Camera.orthographicSize,
                 MinZoom,
                 MaxZoom
                 );
         }
 
-        private void OnValidate()
+            private void OnValidate()
         {
             PanSpeed = Mathf.Max(PanSpeed, 0f);
             ZoomSpeed = Mathf.Max(ZoomSpeed, 0f);       

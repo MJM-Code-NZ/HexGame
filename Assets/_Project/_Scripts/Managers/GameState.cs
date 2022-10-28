@@ -31,9 +31,9 @@ namespace MJM.HG
 
         }
 
-        public virtual void LoadSceneComplete()
+        public virtual void LoadSceneComplete(GameStateName prevGameState)
         {
-
+            Execute();
         }
 
         public virtual void PauseRequest()

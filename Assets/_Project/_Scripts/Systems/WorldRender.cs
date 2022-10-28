@@ -280,7 +280,7 @@ namespace MJM.HG
             _mapObjectsRenderData[HexCoordConversion.HexCoordToHexKey(mapObject.Position)] = _gameObject;
         }
 
-        private Vector3 GridToWorld(int2 position)
+        public Vector3 GridToWorld(int2 position)
         {
             Vector3 worldPosition = _hexGrid.CellToWorld(new Vector3Int(position.x, position.y, 0));
 

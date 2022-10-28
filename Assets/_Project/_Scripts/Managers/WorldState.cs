@@ -37,13 +37,17 @@ namespace MJM.HG
         {
             if (!(prevGameState == GameStateName.WorldAutoState))
             {
-                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);               
+                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
             }
+            else
+            {
+                _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
 
-            Execute();
+                Execute();
+            }
         }
 
-        public override void LoadSceneComplete()
+        public override void LoadSceneComplete(GameStateName prevGameState)
         {
             _gmInstance.EnergySystemConfigurer.ConfigureEnergySystem();
 
@@ -56,7 +60,7 @@ namespace MJM.HG
                 List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
 
                 _gmInstance.EntitySystem.Initialize(_world, _playerPositionList); 
-                            }
+            }
             else
             {
                 _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);               
@@ -64,9 +68,14 @@ namespace MJM.HG
 
             CameraManager.Instance.EnableCameraControls(true);
 
-            GameManager.Instance.EnableGameflowControls(true);
+            _gmInstance.EnableGameflowControls(true);
 
             TimeManager.Instance.StartWorldTime();
+
+            // This is a ugly work around - because the WorldStateAuto version of LoadSceneComplete calls this method as its base.
+            // This is necessary to prevent WorldStateAuto from running execute twice.
+            if (_gmInstance.GameStateMachine.CurrentState.StateName == GameStateName.WorldState)
+                Execute();
         }
 
         public override void PauseRequest()
@@ -93,6 +102,8 @@ namespace MJM.HG
                 TimeManager.Instance.ResetTimers();
 
                 CameraManager.Instance.EnableCameraControls(false);
+
+                CameraManager.Instance.Reset();
 
                 GameManager.Instance.EnableGameflowControls(false);
 

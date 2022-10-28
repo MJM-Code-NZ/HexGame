@@ -99,12 +99,12 @@ namespace MJM.HG
             _numberOfPlayers = Math.Max(_numberOfPlayers, 1);
         }       
 
-        public void ProcessSceneLoad(string sceneName)
+        public void ProcessSceneLoad(string sceneName, GameStateName prevGameState = GameStateName.None)
         {
-            StartCoroutine(LoadScene(sceneName));
+            StartCoroutine(LoadScene(sceneName, prevGameState));
         }
 
-        public IEnumerator LoadScene(string sceneName)
+        public IEnumerator LoadScene(string sceneName, GameStateName prevGameState)
         {          
             if (SceneManager.GetSceneByName(sceneName).isLoaded)
                 Debug.Log($"Attemptng to load scene that is already loaded: {sceneName}");               
@@ -121,7 +121,7 @@ namespace MJM.HG
             // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scene in SceneManager to change
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
 
-            GameStateMachine.CurrentState.LoadSceneComplete();
+            GameStateMachine.CurrentState.LoadSceneComplete(prevGameState);
         }
         public void ProcessSceneUnload(string sceneName)
         {
@@ -143,12 +143,19 @@ namespace MJM.HG
                 Debug.Log($"Scene unload failed: {sceneName}");
         }
 
-        public void HandleNewGameRequest(int worldSize, int numberOfPlayers)
+        public void HandleNewGameRequest(int worldSize, int numberOfPlayers, bool auto = false)
         {
             _worldSize = worldSize;
             _numberOfPlayers = numberOfPlayers;
-            
-            GameStateMachine.ChangeState(GameStateName.WorldState); 
+
+            if (auto)
+            {
+                GameStateMachine.ChangeState(GameStateName.WorldAutoState);
+            }
+            else
+            {
+                GameStateMachine.ChangeState(GameStateName.WorldState);
+            }
         }
 
         public void HandleQuitGameRequest()
@@ -156,14 +163,9 @@ namespace MJM.HG
             GameStateMachine.ChangeState(GameStateName.QuitState);
         }
 
-        public void HandleExitToMenuRequest()
+        public void HandleExitToMenuRequest(bool auto = false)
         {
-            GameStateMachine.ChangeState(GameStateName.MainMenuState);
-        }
-
-        public void HandleAutoPlayRequest(bool autoPlay)
-        {
-            if (autoPlay)
+            if (auto)
             {
                 GameStateMachine.ChangeState(GameStateName.MainMenuAutoState);
             }
@@ -171,6 +173,24 @@ namespace MJM.HG
             {
                 GameStateMachine.ChangeState(GameStateName.MainMenuState);
             }
+        }
+
+        public void HandleAutoPlayRequest(bool autoPlay)
+        {
+            if (autoPlay)
+            {
+                if (!(GameStateMachine.CurrentState.StateName == GameStateName.MainMenuAutoState))
+                    GameStateMachine.ChangeState(GameStateName.MainMenuAutoState);
+            }
+            else
+            {
+                GameStateMachine.ChangeState(GameStateName.MainMenuState);
+            }
+        }
+
+        public void HandleWorldAutoPlayOffRequest()
+        {
+            GameStateMachine.ChangeState(GameStateName.WorldState);
         }
 
         public void EnableGameflowControls(bool enable)

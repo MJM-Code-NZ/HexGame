@@ -21,8 +21,10 @@ namespace MJM.HG
             {
                 _gmInstance.ProcessSceneLoad(GameManager.MenuScene);
             }
-
-            Execute();
+            else
+            {
+                Execute();
+            }
         }
         
         public override void Exit(GameStateName nextGameState)

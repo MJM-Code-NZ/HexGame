@@ -24,11 +24,10 @@ namespace MJM.HG
             else
             {
                 _oldStateName = GameStateName.None; 
-            }  
+            }
 
-            gameObject.AddComponent(System.Type.GetType(_namespace + newStateName.ToString())); 
-            _currentState = (GameState)GetComponent(System.Type.GetType(_namespace + newStateName.ToString()));
-
+            _currentState = (GameState)gameObject.AddComponent(System.Type.GetType(_namespace + newStateName.ToString()));
+            
             _currentState.Enter(_oldStateName);
         }
     }
