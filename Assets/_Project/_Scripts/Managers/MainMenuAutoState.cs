@@ -10,49 +10,61 @@ namespace MJM.HG
         const string MainMenuUIGameObjectName = "MainMenuUI";
         MainMenuUI _mainMenuUI;
 
-        public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
-        {
-            base.Awake();
+        //public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
+        //{
+        //    base.Awake();
+        //}
 
+        public override void Enter(GameStateName prevGameStateName)
+        {
             _stateName = GameStateName.MainMenuAutoState;
-        }
+            _sceneName = SceneName.MenuScene;
 
-        public override void Enter(GameStateName prevGameState)
-        {
-            if (!(prevGameState == GameStateName.MainMenuState))
+            bool _loadRequired;
+
+            _loadRequired = !(prevGameStateName == GameStateName.MainMenuState);
+
+            if (_loadRequired)
             {
-                _gmInstance.ProcessSceneLoad(GameManager.MenuScene, prevGameState);
+                _gmInstance.ProcessSceneLoad(_sceneName);
             }
             else
             {
-                _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
+                PostAndNoLoadShared();
 
                 Execute();
-            }
-
-            
+            }         
         }
 
-        public override void LoadSceneComplete(GameStateName prevGameState)
+        public override void LoadSceneComplete() //GameStateName prevGameState
         {
-            _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
-            
+            PostAndNoLoadShared();
+
             _mainMenuUI.AutoToggle.isOn = true;
 
             Execute();
         }
 
-        public override void Exit(GameStateName nextGameState)
+        // This is intended to catch common logic that must be performed regardless of whether a scene was loaded or not but
+        // that cannot be performed until after the scene has been loaded
+        public override void PostAndNoLoadShared()
         {
-            StopCoroutine("AutoProcess");
-            
-            if (!(nextGameState == GameStateName.MainMenuState))
-            {
-                _gmInstance.ProcessSceneUnload(GameManager.MenuScene);
-            }
+            _mainMenuUI = GameObject.Find(MainMenuUIGameObjectName).GetComponent<MainMenuUI>();
         }
 
+        public override void Exit(GameStateName nextGameStateName)
+        {
+            bool _unloadRequired;
 
+            StopCoroutine("AutoProcess");
+
+            _unloadRequired = !(nextGameStateName == GameStateName.MainMenuState);
+
+            if (_unloadRequired)
+            {
+                _gmInstance.ProcessSceneUnload(_sceneName);
+            }
+        }
 
         // This is the extra "automation" logic for the menu screen
         public override void Execute()

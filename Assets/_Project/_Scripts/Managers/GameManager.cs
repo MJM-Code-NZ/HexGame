@@ -29,9 +29,9 @@ namespace MJM.HG
         public int NumberOfPlayers { get { return _numberOfPlayers; } }
 
         // Constants for all scenes in build to help with game manager readability
-        public const string MainScene = "MainScene";
-        public const string MenuScene = "MenuScene";
-        public const string WorldScene = "WorldScene";
+        //public const string MainScene = "MainScene";
+        //public const string MenuScene = "MenuScene";
+        //public const string WorldScene = "WorldScene";
 
         void Awake()
         {
@@ -84,9 +84,9 @@ namespace MJM.HG
             {
                 Scene _scene = SceneManager.GetSceneAt(i);
                 
-                if (_scene.isLoaded && _scene.name != MainScene)
+                if (_scene.isLoaded && _scene.name != SceneName.MainScene.ToString())
                 {
-                    ProcessSceneUnload(_scene.name);
+                    ProcessSceneUnload((SceneName)Enum.Parse(typeof(SceneName), _scene.name));
                 }
             }
 #endif
@@ -99,48 +99,50 @@ namespace MJM.HG
             _numberOfPlayers = Math.Max(_numberOfPlayers, 1);
         }       
 
-        public void ProcessSceneLoad(string sceneName, GameStateName prevGameState = GameStateName.None)
+        public void ProcessSceneLoad(SceneName sceneName, GameStateName prevGameState = GameStateName.None)
         {
-            StartCoroutine(LoadScene(sceneName, prevGameState));
+            StartCoroutine(LoadScene(sceneName)); //, prevGameState
         }
 
-        public IEnumerator LoadScene(string sceneName, GameStateName prevGameState)
+        public IEnumerator LoadScene(SceneName sceneName) //, GameStateName prevGameState
         {          
-            if (SceneManager.GetSceneByName(sceneName).isLoaded)
+            if (SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
                 Debug.Log($"Attemptng to load scene that is already loaded: {sceneName}");               
                 
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            yield return SceneManager.LoadSceneAsync(sceneName.ToString(), LoadSceneMode.Additive);
 
             // These debug messages only reflect whether the relevant scene is now loaded and does not consider
             // whether an instance of the scene was already loaded or not
-            if (SceneManager.GetSceneByName(sceneName).isLoaded)
+            if (SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
                 Debug.Log($"Scene is now loaded: {sceneName}");
             else
                 Debug.Log($"Scene load failed: {sceneName}");
 
             // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scene in SceneManager to change
-            SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName.ToString()));
 
-            GameStateMachine.CurrentState.LoadSceneComplete(prevGameState);
+            GameStateMachine.CurrentState.LoadSceneComplete(); //prevGameState
         }
-        public void ProcessSceneUnload(string sceneName)
+        public void ProcessSceneUnload(SceneName sceneName)
         {
             StartCoroutine(UnloadScene(sceneName));
         }
 
-        public IEnumerator UnloadScene(string sceneName)
+        public IEnumerator UnloadScene(SceneName sceneName)
         {
-            if (!SceneManager.GetSceneByName(sceneName).isLoaded)
+            if (!SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
                 Debug.Log($"Attemptng to unload scene that is not loaded: {sceneName}");
 
-            yield return SceneManager.UnloadSceneAsync(sceneName);
+            yield return SceneManager.UnloadSceneAsync(sceneName.ToString());
 
             // These debug messages only reflect whether the relevant scene is now unloaded and does not consider
             // whether an instance of the scene was already loaded or not
-            if (!SceneManager.GetSceneByName(sceneName).isLoaded)           
+            if (!SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)           
                 Debug.Log($"Scene is now unloaded: {sceneName}");
             else           
                 Debug.Log($"Scene unload failed: {sceneName}");
+
+            GameStateMachine.CurrentState.UnloadSceneComplete();
         }
 
         public void HandleNewGameRequest(int worldSize, int numberOfPlayers, bool auto = false)

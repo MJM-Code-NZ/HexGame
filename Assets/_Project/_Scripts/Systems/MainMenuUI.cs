@@ -88,7 +88,7 @@ namespace MJM.HG
 
         public void AutoToggleChange()
         {
-            Debug.Log($"Auto toggle change {_autoToggle.isOn}");
+            // Debug.Log($"Auto toggle change {_autoToggle.isOn}");
             GameManager.Instance.HandleAutoPlayRequest(_autoToggle.isOn);
         }
     }

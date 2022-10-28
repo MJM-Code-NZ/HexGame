@@ -10,32 +10,44 @@ namespace MJM.HG
 
     public class WorldAutoState : WorldState
     {
-        private const int _maxAutoCycle = 5;
+        private const int _maxAutoCycle = 4;
         private const int _closeZoom = 4;
-        private const float _autoDuration = 10f;
+        private const float _autoDuration = 3f;
+
+        private bool _autoStopBlock = false;
+        public bool AutoStopBlock { get { return _autoStopBlock; } }
 
         public override void Awake()
         {
             base.Awake();
-
-            _stateName = GameStateName.WorldAutoState;      
         }
 
-        public override void Enter(GameStateName prevGameState)
+        public override void Enter(GameStateName prevGameStateName)
         {
-            if (!(prevGameState == GameStateName.WorldState))
+            _stateName = GameStateName.WorldAutoState;
+            _sceneName = SceneName.WorldScene;
+
+            bool _loadRequired;
+
+            _loadRequired = !(prevGameStateName == GameStateName.WorldState);
+
+            if (_loadRequired)
             {
-                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
+                _gmInstance.ProcessSceneLoad(_sceneName);
             }
             else
             {
+                PostAndNoLoadShared();
+
                 Execute();
             }
         }
 
-        public override void LoadSceneComplete(GameStateName prevGameState)
+        public override void LoadSceneComplete()
         {
-            base.LoadSceneComplete(prevGameState);
+            PostLoadShared();
+
+            PostAndNoLoadShared(); 
 
             _worldUI.AutoShow(true);
 
@@ -57,12 +69,18 @@ namespace MJM.HG
             Vector3 _worldPosition;
             Vector3 _cameraPosition;
 
+            int _farZoom;
+
+            _farZoom = _worldSize + 2;
+
+            if (_farZoom < 6) _farZoom += 2;
+
             for (int autoCycle = 1; autoCycle <= _maxAutoCycle; autoCycle++)
             {
                 _cameraPosition = CameraManager.Instance.Camera.transform.position;
 
                 
-                CameraManager.Instance.SetAutoZoom(_worldSize + 2, _autoDuration);
+                CameraManager.Instance.SetAutoZoom(_farZoom, _autoDuration);
 
                 yield return new WaitUntil(ZoomComplete);
                 
@@ -81,13 +99,13 @@ namespace MJM.HG
                 }
                 while (_numberOfPlayers != 1 && atPosition);
 
-                Debug.Log($"Pan Found {_worldPosition}");
+                //Debug.Log($"Pan Found {_worldPosition}");
 
                 CameraManager.Instance.SetAutoPan(_worldPosition, _autoDuration);
 
                 yield return new WaitUntil(PanComplete);
 
-                Debug.Log($"Pan Complete {CameraManager.Instance.Camera.transform.position}");
+                //Debug.Log($"Pan Complete {CameraManager.Instance.Camera.transform.position}");
 
                 yield return new WaitForSeconds(5);
 
@@ -99,7 +117,11 @@ namespace MJM.HG
 
                 if (_worldUI.SpeedSlider.value > 0.2f)
                 {
+                    _autoStopBlock = true; 
+                    
                     _worldUI.SpeedSlider.value -= 0.2f;
+
+                    _autoStopBlock = false;
                 }
             }
 
@@ -107,13 +129,17 @@ namespace MJM.HG
 
             yield return new WaitUntil(PanComplete);
 
-            CameraManager.Instance.SetAutoZoom(_worldSize + 2, _autoDuration);
+            CameraManager.Instance.SetAutoZoom(_farZoom, _autoDuration);
 
             yield return new WaitUntil(ZoomComplete);
 
             yield return new WaitForSeconds(5);
 
+            _autoStopBlock = true;
+            
             _worldUI.EscClick();
+
+            _autoStopBlock = false;
 
             yield return new WaitForSeconds(5);
 
@@ -121,46 +147,22 @@ namespace MJM.HG
         }
 
         private bool ZoomComplete() => !CameraManager.Instance.AutoZoomOn;
-        private bool PanComplete() => !CameraManager.Instance.AutoPanOn;
-
-        //public override void PauseRequest()
-        //{
-        //    _worldUI.PauseKeyPress();
-        //}
-
-        //public override void StepRequest()
-        //{
-        //    _worldUI.StepClick();
-        //}
-
-        //public override void EscapeRequest()
-        //{
-        //    _worldUI.EscKeyPress();
-        //}
+        private bool PanComplete() => !CameraManager.Instance.AutoPanOn;       
 
         public override void Exit(GameStateName nextGameStateName)
         {
+            bool _unloadRequired;
+            
             StopCoroutine("AutoProcess");
 
             CameraManager.Instance.DisableAuto();
+            
+            _unloadRequired = !(nextGameStateName == GameStateName.WorldState);
 
-            if (!(nextGameStateName == GameStateName.WorldState))
+            if (_unloadRequired)
             {
-                _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
-
-                TimeManager.Instance.ResetTimers();
-
-                CameraManager.Instance.EnableCameraControls(false);
-
-                CameraManager.Instance.Reset();
-
-                GameManager.Instance.EnableGameflowControls(false);
-
-                _gmInstance.WorldSystem.Quit();
-                _gmInstance.EntitySystem.Quit();
-
-                
-            }            
+                PostUnloadShared();
+            }
         }
     }
 }

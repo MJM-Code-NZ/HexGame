@@ -8,30 +8,41 @@ namespace MJM.HG
     
     public class MainMenuState : GameState
     {        
-        public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
-        {
-            base.Awake();
-
-            _stateName = GameStateName.MainMenuState;           
-        }
+        //public override void Awake() 
+        //{
+        //    base.Awake();          
+        //}
         
-        public override void Enter(GameStateName prevGameState)
-        {
-            if (!(prevGameState == GameStateName.MainMenuAutoState))
+        public override void Enter(GameStateName prevGameStateName)
+        {      
+            _stateName = GameStateName.MainMenuState;
+            _sceneName = SceneName.MenuScene;
+
+            bool _loadRequired;
+
+            _loadRequired = !(prevGameStateName == GameStateName.MainMenuAutoState);
+
+            if (_loadRequired)
             {
-                _gmInstance.ProcessSceneLoad(GameManager.MenuScene);
+                _gmInstance.ProcessSceneLoad(_sceneName);
             }
             else
             {
+                PostAndNoLoadShared();
+
                 Execute();
-            }
+            } 
         }
         
-        public override void Exit(GameStateName nextGameState)
+        public override void Exit(GameStateName nextGameStateName)
         {
-            if (!(nextGameState == GameStateName.MainMenuAutoState))
+            bool _unloadRequired;
+
+            _unloadRequired = !(nextGameStateName == GameStateName.MainMenuAutoState);
+
+            if (_unloadRequired)
             {
-                _gmInstance.ProcessSceneUnload(GameManager.MenuScene);
+                _gmInstance.ProcessSceneUnload(_sceneName);
             }
         }
     }

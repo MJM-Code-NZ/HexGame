@@ -10,7 +10,6 @@ namespace MJM.HG
 
     public class WorldState : GameState
     {       
-        // Still considering whether storing these 3 variables is a good idea versus looking them up from GameManager when needed
         protected int _worldSize;
         protected int _numberOfPlayers;
         protected PlayerParameters _params;
@@ -22,7 +21,6 @@ namespace MJM.HG
         {
             base.Awake();
 
-            _stateName = GameStateName.WorldState;
             _worldSize = _gmInstance.WorldSize;
             _numberOfPlayers = _gmInstance.NumberOfPlayers;
             _params = _gmInstance.PlayerParameters;
@@ -33,25 +31,47 @@ namespace MJM.HG
             }
         }
         
-        public override void Enter(GameStateName prevGameState)
+        public override void Enter(GameStateName prevGameStateName)
         {
-            if (!(prevGameState == GameStateName.WorldAutoState))
+            _stateName = GameStateName.WorldState;
+            _sceneName = SceneName.WorldScene;
+
+            bool _loadRequired;
+
+            _loadRequired = !(prevGameStateName == GameStateName.WorldAutoState);
+
+            if (_loadRequired)
             {
-                _gmInstance.ProcessSceneLoad(GameManager.WorldScene);
+                _gmInstance.ProcessSceneLoad(_sceneName);
             }
             else
             {
-                _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
+                PostAndNoLoadShared();
 
                 Execute();
             }
         }
 
-        public override void LoadSceneComplete(GameStateName prevGameState)
+        public override void LoadSceneComplete()
+        { 
+            PostLoadShared();
+
+            PostAndNoLoadShared();
+
+            Execute();
+        }
+
+        // This is intended to catch common logic that must be performed regardless of whether a scene was loaded or not but
+        // that cannot be performed until after the scene has been loaded
+        public override void PostAndNoLoadShared()
+        {
+            _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
+        }
+
+        // This is intended to catch common logic that is performed post scene load by multiple game states.
+        public virtual void PostLoadShared()
         {
             _gmInstance.EnergySystemConfigurer.ConfigureEnergySystem();
-
-            _worldUI = GameObject.Find(WorldUIGameObjectName).GetComponent<WorldUI>();
 
             World _world = _gmInstance.WorldSystem.Initialize(_worldSize, _numberOfPlayers);
 
@@ -59,11 +79,11 @@ namespace MJM.HG
             {
                 List<int2> _playerPositionList = PlayerSystem.DeterminePlayerLocations(_world, _numberOfPlayers);
 
-                _gmInstance.EntitySystem.Initialize(_world, _playerPositionList); 
+                _gmInstance.EntitySystem.Initialize(_world, _playerPositionList);
             }
             else
             {
-                _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);               
+                _gmInstance.EntitySystem.Initialize(_world, _params.PlayerPositionList);
             }
 
             CameraManager.Instance.EnableCameraControls(true);
@@ -71,11 +91,35 @@ namespace MJM.HG
             _gmInstance.EnableGameflowControls(true);
 
             TimeManager.Instance.StartWorldTime();
+        }
 
-            // This is a ugly work around - because the WorldStateAuto version of LoadSceneComplete calls this method as its base.
-            // This is necessary to prevent WorldStateAuto from running execute twice.
-            if (_gmInstance.GameStateMachine.CurrentState.StateName == GameStateName.WorldState)
-                Execute();
+        public override void Exit(GameStateName nextGameStateName)
+        {
+            bool _unloadRequired;
+
+            _unloadRequired = !(nextGameStateName == GameStateName.WorldAutoState);
+
+            if (_unloadRequired)
+            {
+                PostUnloadShared();
+            }
+        }
+
+        // This is intended to catch common logic that is performed post scene unload by multiple game states.
+        public virtual void PostUnloadShared()
+        {
+            _gmInstance.ProcessSceneUnload(_sceneName);
+
+            TimeManager.Instance.ResetTimers();
+
+            CameraManager.Instance.EnableCameraControls(false);
+
+            CameraManager.Instance.Reset();
+
+            GameManager.Instance.EnableGameflowControls(false);
+
+            _gmInstance.WorldSystem.Quit();
+            _gmInstance.EntitySystem.Quit();
         }
 
         public override void PauseRequest()
@@ -91,25 +135,6 @@ namespace MJM.HG
         public override void EscapeRequest()
         {
             _worldUI.EscKeyPress();
-        }
-
-        public override void Exit(GameStateName nextGameStateName)
-        {
-            if (!(nextGameStateName == GameStateName.WorldAutoState))
-            {
-                _gmInstance.ProcessSceneUnload(GameManager.WorldScene);
-
-                TimeManager.Instance.ResetTimers();
-
-                CameraManager.Instance.EnableCameraControls(false);
-
-                CameraManager.Instance.Reset();
-
-                GameManager.Instance.EnableGameflowControls(false);
-
-                _gmInstance.WorldSystem.Quit();
-                _gmInstance.EntitySystem.Quit();
-            }
         }
     }
 }

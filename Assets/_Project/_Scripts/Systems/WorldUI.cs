@@ -47,6 +47,11 @@ namespace MJM.HG
 
         public void SpeedSliderChanged()
         {
+            if (_autoButton.IsActive() && !((WorldAutoState)GameManager.Instance.GameStateMachine.CurrentState).AutoStopBlock)
+            {
+                AutoClick();
+            }
+
             _speedSlider.value = Mathf.Round((_speedSlider.value) * 5) / 5;
             _speedSliderValueText.text = _speedLabel1 + _speedSlider.value + _speedLabel2;
 
@@ -59,9 +64,8 @@ namespace MJM.HG
         {
             _speedSliderMinText.text = _speedSlider.minValue.ToString();
             _speedSliderMaxText.text = _speedSlider.maxValue.ToString();
-            _speedSlider.value = 1.0f;
 
-            SpeedSliderChanged();
+            TimeManager.Instance.UpdateWorldSpeedRequest(_speedSlider.value);
         }
 
         public void HideClick()
@@ -94,7 +98,7 @@ namespace MJM.HG
         // This is the method called when the pause toggle changes
         public void PauseToggle()
         {
-            if (_autoButton.IsActive())
+            if (_autoButton.IsActive() && !((WorldAutoState)GameManager.Instance.GameStateMachine.CurrentState).AutoStopBlock)
             {
                 AutoClick();
             }
@@ -114,11 +118,11 @@ namespace MJM.HG
 
         public void EscClick()
         {
-            if (_autoButton.IsActive())
+            if (_autoButton.IsActive()  && !((WorldAutoState)GameManager.Instance.GameStateMachine.CurrentState).AutoStopBlock)
             {
                 AutoClick();
             }
-            
+
             // Store pause state before escape
             _pausedBeforeEscapeUsed = _pauseToggle.isOn;
             // If not paused pause now           
@@ -129,13 +133,13 @@ namespace MJM.HG
 
             if (_bottomRightHidden)
             {
-                _bottomRightPanelAlt.SetActive(false);               
+                _bottomRightPanelAlt.SetActive(false);
             }
             else
             {
                 _bottomRightPanel.SetActive(false);
             }
-            
+
             _topRightPanel.SetActive(false);
 
             _centerMenuPanel.SetActive(true);
