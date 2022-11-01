@@ -382,6 +382,7 @@ MonoBehaviour:
   PanSpeed: 8
   ZoomSpeed: 8
   DefaultZoom: 6
+  DefaultPosition: {x: 0, y: 0, z: -10}
   MinZoom: 2
   MaxZoom: 20
 --- !u!114 &1904524349
