@@ -99,9 +99,12 @@ namespace MJM.HG
             // Build list of candidate target cells
             for (int direction = 0; direction < 6; direction++)
             {
-                HexCoord neighbor = hexCell.Position.Neighbor(direction);
+                // Performance change to how neighbor cells are found
+                //HexCoord neighbor = hexCell.Position.Neighbor(direction);
 
-                HexCell neighborCell = World.LookupHexCell(neighbor);
+                //HexCell neighborCell = World.LookupHexCell(neighbor);
+
+                HexCell neighborCell = hexCell.LookupNeighbor(direction);
 
                 if (neighborCell.GroundType == GroundType.Standard)
                     ProcessEnergyDifference(hexCell, neighborCell);
@@ -146,9 +149,12 @@ namespace MJM.HG
             // Determine if any of the neighbors of neighbor cell do not match hexcells energy
             for (int direction = 0; direction < 6; direction++)
             {
-                HexCoord neighbor2Position = neighborCell.Position.Neighbor(direction);
+                // Performance change to how neighbor cells are found
+                //HexCoord neighbor2Position = neighborCell.Position.Neighbor(direction);
 
-                HexCell neighbor2Cell = World.LookupHexCell(neighbor2Position);
+                //HexCell neighbor2Cell = World.LookupHexCell(neighbor2Position);
+
+                HexCell neighbor2Cell = neighborCell.LookupNeighbor(direction);
 
                 if (neighbor2Cell.GroundType == GroundType.Standard
                     && neighbor2Cell.EnergyOwner != null
@@ -219,9 +225,12 @@ namespace MJM.HG
         {
             for (int direction = 0; direction < 6; direction++)
             {
-                HexCoord _neighborPosition = hexCell.Position.Neighbor(direction);
+                // Performance change to how neighbor cells are found
+                //HexCoord _neighborPosition = hexCell.Position.Neighbor(direction);
 
-                HexCell _neighborCell = World.LookupHexCell(_neighborPosition);
+                //HexCell _neighborCell = World.LookupHexCell(_neighborPosition);
+
+                HexCell _neighborCell = hexCell.LookupNeighbor(direction);
 
                 if (_neighborCell.GroundType == GroundType.Standard
                     && _neighborCell.EnergyOwner == null)

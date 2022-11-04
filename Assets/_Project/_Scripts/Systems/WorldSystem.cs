@@ -51,6 +51,17 @@ namespace MJM.HG
                 }
             }
 
+            // populate hexcell neighbors after all hexcells have been created
+            foreach (KeyValuePair<HexKey, HexCell> keyValuePair in World.HexCells)
+            {
+                HexCell hexCell = keyValuePair.Value;
+                
+                if (hexCell.GroundType == GroundType.Standard)
+                {
+                    PopulateNeighbors(hexCell);
+                }
+            }
+
             OnUpdateWorldRender?.Invoke(this, new OnWorldEventArgs { World = World });
 
             return _world;
@@ -65,6 +76,16 @@ namespace MJM.HG
             HexCell hexCell = new HexCell(position, groundType);
 
             World.AddHexCell(position, hexCell);
+        }
+
+        private void PopulateNeighbors(HexCell hexCell)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                HexCoord neighborCoord = hexCell.Position.Neighbor(i);
+
+                hexCell.NeighborList.Add(World.LookupHexCell(neighborCoord));
+            }
         }
 
         private GroundType DetermineGroundType(int x, int y)
