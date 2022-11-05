@@ -92,7 +92,6 @@ namespace MJM.HG
         private static void CalculateCellEnergySpread(HexCell hexCell)
         {
             _totalSpreadWeighting = 0;
-            //_maxEnergyDiff = 0; // highest energy difference found so far
 
             _possibleEnergyTargets.Clear();
 
@@ -110,8 +109,7 @@ namespace MJM.HG
                     ProcessEnergyDifference(hexCell, neighborCell);
             }
 
-            if(_possibleEnergyTargets.Count > 0)
-            //if (_maxEnergyDiff > 0)
+            if(_possibleEnergyTargets.Count > 0)            
             {
                 HexCell _energyTarget = DetermineEnergyTarget();  // energy can move - determine target
 
