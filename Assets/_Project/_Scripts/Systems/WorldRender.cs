@@ -40,7 +40,6 @@ namespace MJM.HG
         [SerializeField]
         private int _energyDisplayCap = 5;
 
-        // Awake is called on object creation
         void Awake()
         {           
             SetupEvents();
@@ -59,16 +58,6 @@ namespace MJM.HG
         {
             _hexGrid = GameObject.Find("HexGrid").GetComponent<Grid>();
             _hexTilemap = GameObject.Find("HexTilemap").GetComponent<Tilemap>();
-
-            //_energyTiles = new Dictionary<int, Tile>
-            //{
-            //    [0] = null, // at this time there is a separate no energy tile outside this dictionary
-            //    [1] = _energyTilesList[0],
-            //    [2] = _energyTilesList[1],
-            //    [3] = _energyTilesList[2],
-            //    [4] = _energyTilesList[3],
-            //    [5] = _energyTilesList[4],
-            //};
         }
 
         private void SetupEntityResources()
@@ -89,7 +78,8 @@ namespace MJM.HG
             }
             else
             {
-                Debug.Log("Map Object Lists do not match length. Check serialized properties in unity editor" + this);
+                // This is inside awake call so some risk of logging system not to be ready for this
+                Logging.GeneralLogger.LogWarning("Map Object Lists do not match length. Check serialized properties in unity editor", this);
             }
         }
 

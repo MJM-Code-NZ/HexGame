@@ -10,11 +10,6 @@ namespace MJM.HG
         const string MainMenuUIGameObjectName = "MainMenuUI";
         MainMenuUI _mainMenuUI;
 
-        //public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
-        //{
-        //    base.Awake();
-        //}
-
         public override void Enter(GameStateName prevGameStateName)
         {
             _stateName = GameStateName.MainMenuAutoState;
@@ -69,7 +64,7 @@ namespace MJM.HG
         // This is the extra "automation" logic for the menu screen
         public override void Execute()
         {
-            Debug.Log("Starting Menu Coroutine");
+            Logging.GeneralLogger.Log("Starting Menu Coroutine");
             StartCoroutine(AutoProcess());
         }
 

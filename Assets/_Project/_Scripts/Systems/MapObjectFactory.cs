@@ -16,7 +16,7 @@ namespace MJM.HG
         {
             if (!world.OnMap(position))
             {
-                Debug.Log("Attempt to create energy mine off map " + position + this);
+                Logging.GeneralLogger.LogWarning("Attempt to create energy mine off map " + position, this);
                 return null;
             }
 

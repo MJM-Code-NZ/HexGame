@@ -38,7 +38,7 @@ namespace MJM.HG
         {
             if (worldSize < 1)
             {
-                Debug.Log("World size is too small " + worldSize + this);
+                Logging.GeneralLogger.LogError("World size is too small " + worldSize, this);
             }
             
             _world = new World(worldSize, players); 

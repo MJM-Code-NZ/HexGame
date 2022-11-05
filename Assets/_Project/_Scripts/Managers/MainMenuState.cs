@@ -7,12 +7,7 @@ namespace MJM.HG
 {
     
     public class MainMenuState : GameState
-    {        
-        //public override void Awake() 
-        //{
-        //    base.Awake();          
-        //}
-        
+    {               
         public override void Enter(GameStateName prevGameStateName)
         {      
             _stateName = GameStateName.MainMenuState;

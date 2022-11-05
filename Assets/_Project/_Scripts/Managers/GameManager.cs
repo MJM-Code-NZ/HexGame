@@ -56,7 +56,7 @@ namespace MJM.HG
                 || GetComponent<TimeManager>() == null
                 || GetComponent<CameraManager>() == null)
             {
-                Debug.Log("Missing component(s) on Managers gameObject {object}");
+                Logging.GeneralLogger.LogError("Missing component(s) on Managers gameObject", this); // risk of logger not being loaded yet
             }
 #endif
 
@@ -107,16 +107,16 @@ namespace MJM.HG
         public IEnumerator LoadScene(SceneName sceneName) //, GameStateName prevGameState
         {          
             if (SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
-                Debug.Log($"Attemptng to load scene that is already loaded: {sceneName}");               
+                Logging.SceneLogger.LogWarning($"Attemptng to load scene that is already loaded: {sceneName}", this);               
                 
             yield return SceneManager.LoadSceneAsync(sceneName.ToString(), LoadSceneMode.Additive);
 
             // These debug messages only reflect whether the relevant scene is now loaded and does not consider
             // whether an instance of the scene was already loaded or not
             if (SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
-                Debug.Log($"Scene is now loaded: {sceneName}");
+                Logging.SceneLogger.Log($"Scene is now loaded: {sceneName}");
             else
-                Debug.Log($"Scene load failed: {sceneName}");
+                Logging.SceneLogger.LogWarning($"Scene load failed: {sceneName}", this);
 
             // Do not refactor the GetSceneByName call above the LoadScene call as LoadScene causes the scene in SceneManager to change
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName.ToString()));
@@ -131,16 +131,16 @@ namespace MJM.HG
         public IEnumerator UnloadScene(SceneName sceneName)
         {
             if (!SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
-                Debug.Log($"Attemptng to unload scene that is not loaded: {sceneName}");
+                Logging.SceneLogger.LogWarning($"Attemptng to unload scene that is not loaded: {sceneName}", this);
 
             yield return SceneManager.UnloadSceneAsync(sceneName.ToString());
 
             // These debug messages only reflect whether the relevant scene is now unloaded and does not consider
             // whether an instance of the scene was already loaded or not
-            if (!SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)           
-                Debug.Log($"Scene is now unloaded: {sceneName}");
-            else           
-                Debug.Log($"Scene unload failed: {sceneName}");
+            if (!SceneManager.GetSceneByName(sceneName.ToString()).isLoaded)
+                Logging.SceneLogger.Log($"Scene is now unloaded: {sceneName}");
+            else
+                Logging.SceneLogger.LogWarning($"Scene unload failed: {sceneName}", this);
 
             GameStateMachine.CurrentState.UnloadSceneComplete();
         }

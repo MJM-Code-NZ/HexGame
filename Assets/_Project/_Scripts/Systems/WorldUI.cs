@@ -36,7 +36,7 @@ namespace MJM.HG
         {
             if (_speedSlider == null)
             {
-                Debug.Log($"Speed slider not linked to UI script {this}");
+                Logging.GeneralLogger.LogWarning($"Speed slider not linked to UI script", this);
             }
 
             SetInitialSliderValues();
@@ -70,7 +70,6 @@ namespace MJM.HG
 
         public void HideClick()
         {
-            //Debug.Log("Hide click");
             _bottomRightHidden = true;
            
             _bottomRightPanel.SetActive(false);
@@ -79,7 +78,6 @@ namespace MJM.HG
 
         public void ShowClick()
         {
-            //Debug.Log("Show click");
             _bottomRightHidden = false;
             
             _bottomRightPanel.SetActive(true);
@@ -88,7 +86,6 @@ namespace MJM.HG
 
         public void StepClick()
         {
-            //Debug.Log("Step click");
             if (!_escapeMenuOpen)
             {
                 TimeManager.Instance.WorldStepRequest();

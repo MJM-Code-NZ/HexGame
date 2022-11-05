@@ -96,9 +96,7 @@ namespace MJM.HG
             int _maxSpawnY = -_corner + _spawnWidth * (y - 1) + _param.SpaceBetweenPlayers * (y - 1) + _spawnWidth - 1;
 
             int _posY = RandomHelper.RandomRange(_minSpawnY, _maxSpawnY);
-
-            //Debug.Log($"PP {_minSpawnX} {_maxSpawnX} {_posX} {_minSpawnY} {_maxSpawnY} _{_posY} ");
-
+          
             return new int2(_posX, _posY);
         }
 

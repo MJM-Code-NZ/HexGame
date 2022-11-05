@@ -62,7 +62,7 @@ namespace MJM.HG
             }
             else
             {
-                Debug.Log("Attempt to access hex not in dictionary: " + position);
+                Logging.GeneralLogger.LogWarning("Attempt to access hex not in dictionary: " + position, this);
 
                 return null;
             }

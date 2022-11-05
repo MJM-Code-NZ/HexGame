@@ -57,7 +57,7 @@ namespace MJM.HG
         // This is the extra "automation" logic for the world screen
         public override void Execute()
         {
-            Debug.Log("Starting World Coroutine");
+            Logging.GeneralLogger.Log("Starting World Coroutine");
             StartCoroutine(AutoProcess());
         }
 
@@ -99,13 +99,9 @@ namespace MJM.HG
                 }
                 while (_numberOfPlayers != 1 && atPosition);
 
-                //Debug.Log($"Pan Found {_worldPosition}");
-
                 CameraManager.Instance.SetAutoPan(_worldPosition, _autoDuration);
 
                 yield return new WaitUntil(PanComplete);
-
-                //Debug.Log($"Pan Complete {CameraManager.Instance.Camera.transform.position}");
 
                 yield return new WaitForSeconds(5);
 

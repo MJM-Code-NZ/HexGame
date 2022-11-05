@@ -140,7 +140,7 @@ namespace MJM.HG
             // In theory a neighbor cell should always match or be null but this check is included for safety / completeness
             if (neighborCell.EnergyOwner != null)
             {
-                Debug.Log($"neighbor no match and not null {neighborCell}");
+                Logging.GeneralLogger.LogWarning($"neighbor no match and not null {neighborCell}", "EnergySystem");
                 return false;
             }
 
@@ -180,7 +180,7 @@ namespace MJM.HG
                 }
             }
 
-            Debug.Log("No target selected by energy difference weighting");
+            Logging.GeneralLogger.LogWarning("No target selected by energy difference weighting", "EnergySystem");
 
             return null;
         }
@@ -331,9 +331,7 @@ namespace MJM.HG
             foreach (KeyValuePair<HexKey, MapObject> keyValuePair in World.MapObjects)
             {
                 MapObject mapObject = keyValuePair.Value;
-
-                //EnergyFlow _energyFlow = new EnergyFlow(mapObject.Position)
-
+               
                 if (mapObject is EnergyMine)
                     SetEnergyUpdate(HexCoordConversion.HexCoordToHexKey(mapObject.Position), 1, mapObject.Tribe);
             }
@@ -355,7 +353,7 @@ namespace MJM.HG
                     {
                         hexCell.Energy = CellEnergyCap;
 
-                        //Debug.Log("Energy cap breached cell id:" + hexCell.Position);
+                        //Logging.GeneralLogger.Log("Energy cap breached cell id:" + hexCell.Position);
                     }
 
                     if (hexCell.EnergyOwner == null)

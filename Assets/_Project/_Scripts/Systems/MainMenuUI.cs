@@ -32,12 +32,12 @@ namespace MJM.HG
         {
             if (_worldSizeSlider == null)
             {
-                Debug.Log($"World size slider not linked to UI script {this}");
+                Logging.GeneralLogger.LogWarning($"World size slider not linked to UI script", this);
             }
 
             if (_playerSlider == null)
             {
-                Debug.Log($"World size slider not linked to UI script {this}");
+                Logging.GeneralLogger.LogWarning($"World size slider not linked to UI script", this);
             }
            
             SetInitialSliderTexts();           
@@ -73,22 +73,17 @@ namespace MJM.HG
 
         public void NewGameClick()
         {
-            // Debug.Log("New game click"); 
-            
             GameManager.Instance.HandleNewGameRequest((int)(_worldSizeSlider.value - 1) / 2, (int)_playerSlider.value);      
         }
 
         public void QuitGameClick()
         {
-            // Debug.Log("Quit game click");
-
             GameManager.Instance.HandleQuitGameRequest();
-
         }
 
         public void AutoToggleChange()
         {
-            // Debug.Log($"Auto toggle change {_autoToggle.isOn}");
+            // Logging.GeneralLogger.Log($"Auto toggle change {_autoToggle.isOn}");
             GameManager.Instance.HandleAutoPlayRequest(_autoToggle.isOn);
         }
     }

@@ -7,11 +7,13 @@ namespace MJM.HG
 {
     public class QuitState : GameState
     {
-        public override void Awake() //WorldState(int worldSize, int numberOfPlayers) : base()
-        {
-            base.Awake();
 
+        
+        public override void Enter(GameStateName prevGameStateName)
+        {
             _stateName = GameStateName.QuitState;
+
+            Execute();
         }
 
         public override void Execute()

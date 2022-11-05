@@ -58,7 +58,7 @@ namespace MJM.HG
             }
             else
             {
-                Debug.Log("Player position outside world boundaries." + this);
+                Logging.GeneralLogger.LogWarning("Player position outside world boundaries.", this);
             }                      
         }
 
